@@ -1,0 +1,8 @@
+{
+  "name": "new-python-project",
+  "description": "Initialize a new Python project with copier-astral template, uv, ruff, pytest, gtm time tracking, GitHub private repo, and feature-branch workflow.",
+  "author": {
+    "name": "Alexander Burchenko",
+    "email": "aabur@mail.ru"
+  }
+}
