@@ -33,7 +33,7 @@ If any tool is missing, stop and show the user how to install it:
 | copier | `pipx install copier` |
 | gh CLI | `brew install gh` then `gh auth login` |
 | gtm | `brew tap memcrab/gtm https://github.com/memcrab/gtm.git && brew install memcrab/gtm/gtm` |
-| gtm (migrate from old tap) | `brew uninstall gtm && brew untap git-time-metric/gtm && brew cleanup` then install above |
+| gtm (migrate from old tap) | `brew uninstall gtm && brew untap git-time-metric/gtm && brew cleanup` then run the command in the row above |
 
 ---
 
