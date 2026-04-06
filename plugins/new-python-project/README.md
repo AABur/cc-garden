@@ -22,7 +22,7 @@ Runs a guided 7-step workflow:
 | [uv](https://github.com/astral-sh/uv) | Package manager |
 | [ruff](https://github.com/astral-sh/ruff) | Linter + formatter |
 | [pytest](https://pytest.org) | Testing (pure pytest, no unittest) |
-| [gtm](https://github.com/git-time-metric/gtm) | Git time tracking |
+| [gtm](https://github.com/Memcrab/gtm) | Git time tracking |
 | [gh CLI](https://cli.github.com) | GitHub automation |
 
 ## Install
