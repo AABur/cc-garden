@@ -1,0 +1,8 @@
+{
+  "name": "bazaraki-post-ad",
+  "description": "Automate posting classified ads on Bazaraki.com (Cyprus). Fills all form fields — category, title, price, description, dropdowns, WhatsApp — then pauses for manual photo upload.",
+  "author": {
+    "name": "Alexander Burchenko",
+    "email": "aabur@mail.ru"
+  }
+}
