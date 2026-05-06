@@ -79,44 +79,39 @@ Resolution:
 1. **Read the marker file** if it exists. The file contains a single ISO-639
    language code on the first line (e.g. `ru`, `en`, `de`, `ja`, `zh`).
    Strip whitespace. If non-empty, use that language and skip to Step 3.
-2. **Otherwise, detect the user's likely native language** from the `LANG`
-   environment variable. Run `echo "$LANG"` and take the prefix before the
-   first `_` or `.`:
-   - `ru_RU.UTF-8` → `ru`
-   - `de_DE.UTF-8` → `de`
-   - `ja_JP.UTF-8` → `ja`
-   - `en_US.UTF-8` → `en`
-   - empty / unset → `en`
-3. **If detected language equals `en`**, no question is needed — silently
-   write `en` into the marker file and continue.
-4. **If detected language differs from `en`**, ask **exactly one** question
-   via `AskUserQuestion`:
+2. **Otherwise, ask the user explicitly** via `AskUserQuestion`. Do **not**
+   inspect `$LANG`, the user's chat language, or session content — language
+   choice for retros is a deliberate per-project decision, not a guess.
 
    - Question: `What language should /retro use for this project's retros?`
-     (translate this question into the detected language for the second
-     option's description if you want — but the question itself can stay in
-     English, the user's chat language, or the detected language; pick what
-     feels least intrusive)
    - Header: `Retro language`
    - Option 1:
      - `label: "English"`
      - `description: All future /retro reports for this project will be in English.`
    - Option 2:
-     - `label: <Native name of the detected language>` — e.g. `Русский`,
-       `Deutsch`, `日本語`, `中文`, `Español`, `Français`. Use the
-       autonym, not the English name.
-     - `description: <One-line description in that native language saying
-       "All future /retro reports for this project will be in this
-       language.">`
+     - `label: "Other language"`
+     - `description: Pick another language — you'll specify it in the next message.`
 
-   Take the user's choice. Map back to ISO code (`English` → `en`,
-   `Русский` → `ru`, `Deutsch` → `de`, etc.). Write the code into the
-   marker file (one line, no trailing newline beyond `\n`). Continue with
-   that language.
+3. **Resolve the choice**:
+   - If the user chose `English`, write `en` into the marker file and
+     continue.
+   - If the user chose `Other language`, send one short follow-up message
+     in the chat asking the user to name the language they want. Accept any
+     of: an autonym (`Русский`, `Deutsch`, `日本語`), the English name
+     (`Russian`, `German`, `Japanese`), or an ISO-639-1/2 code (`ru`, `de`,
+     `ja`). Read the user's reply and normalize it to a lowercase ISO-639
+     code yourself — for common languages a short mental mapping is enough
+     (`Русский`/`Russian`/`ru` → `ru`, `Deutsch`/`German`/`de` → `de`,
+     `日本語`/`Japanese`/`ja` → `ja`, `中文`/`Chinese`/`zh` → `zh`,
+     `Español`/`Spanish`/`es` → `es`, `Français`/`French`/`fr` → `fr`,
+     etc.). If the user typed an ISO-639 code already, accept verbatim
+     (lowercased). If the input is genuinely ambiguous, ask **one** more
+     clarifying question; otherwise pick the obvious mapping. Write the
+     resolved code into the marker file and continue with that language.
 
-The marker file is a single line, always overridable: the user can edit it
-or delete it any time to change the language for next run. Never overwrite
-an existing marker — only create it on first run.
+The marker file is a single line (`<code>\n`), always overridable: the user
+can edit it or delete it any time to change the language for next run.
+Never overwrite an existing marker — only create it on first run.
 
 ---
 
