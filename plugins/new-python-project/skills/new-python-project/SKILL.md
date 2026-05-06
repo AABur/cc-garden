@@ -1,12 +1,15 @@
 ---
 name: new-python-project
 description: >-
-  Initialize a new Python project from scratch with full tooling setup.
-  Use whenever the user wants to create, start, initialize, bootstrap, or set up
-  a new Python project — even if they just say "new project", "start a project",
-  "create a Python app", or "I want to build X in Python". Covers the full stack:
-  copier-astral template, uv, ruff, pytest (pure, no unittest), Google docstrings,
-  gtm time tracking, GitHub private repo, branch protection, feature-branch workflow,
+  Bootstrap a brand-new Python project from scratch with full tooling setup.
+  Use ONLY when the user wants to create/scaffold/initialize a NEW project from
+  zero — i.e. produce a new directory with template, repo, and tooling.
+  Trigger phrases: "new python project", "start a python project", "scaffold
+  a python app", "bootstrap a python project", "initialize a new python project".
+  Skip when working in an existing project, adding a feature, or asking general
+  Python questions — those are not project bootstrap. Covers: copier-astral
+  template, uv, ruff, pytest (pure, no unittest), Google docstrings, gtm time
+  tracking, GitHub private repo, branch protection, feature-branch workflow,
   and project CLAUDE.md.
 ---
 

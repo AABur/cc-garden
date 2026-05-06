@@ -4,7 +4,8 @@ description: >-
   Automates filling in a Bazaraki.com classified ad form (https://www.bazaraki.com/post_ad/).
   Use whenever the user wants to post, list, or advertise something for sale on Bazaraki.
   Trigger phrases: "put this on Bazaraki", "create a Bazaraki listing", "post ad on Bazaraki",
-  "разместить на Базараки", "добавить объявление на Базараки", "Cyprus classifieds".
+  "разместить на Базараки", "добавить объявление на Базараки".
+  Skip when the user means a different classifieds platform — this skill is Bazaraki-only.
   Fills category, title, price, description, dropdowns, and WhatsApp automatically,
   then pauses at the Images section for manual photo upload (browser security blocks automation).
 ---
