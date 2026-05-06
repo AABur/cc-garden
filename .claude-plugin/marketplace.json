@@ -1,0 +1,38 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "cc-garden",
+  "description": "Personal collection of Claude Code plugins — utilities for Python project bootstrap, classified-ad posting, and project retrospective analysis.",
+  "owner": {
+    "name": "Alexander Burchenko",
+    "email": "aabur@mail.ru"
+  },
+  "plugins": [
+    {
+      "name": "retro",
+      "description": "Reconstruct decision history for the current project from local Claude Code session JSONLs. Produces a Markdown retrospective with timeline, abandoned approaches, topic map, intent vs state, and recommended CLAUDE.md rules.",
+      "author": {
+        "name": "Alexander Burchenko",
+        "email": "aabur@mail.ru"
+      },
+      "source": "./plugins/retro"
+    },
+    {
+      "name": "bazaraki-post-ad",
+      "description": "Automate posting classified ads on Bazaraki.com (Cyprus). Fills all form fields — category, title, price, description, dropdowns, WhatsApp — then pauses for manual photo upload.",
+      "author": {
+        "name": "Alexander Burchenko",
+        "email": "aabur@mail.ru"
+      },
+      "source": "./plugins/bazaraki-post-ad"
+    },
+    {
+      "name": "new-python-project",
+      "description": "Initialize a new Python project with copier-astral template, uv, ruff, pytest, gtm time tracking, GitHub private repo, and feature-branch workflow.",
+      "author": {
+        "name": "Alexander Burchenko",
+        "email": "aabur@mail.ru"
+      },
+      "source": "./plugins/new-python-project"
+    }
+  ]
+}
