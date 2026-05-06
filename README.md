@@ -14,6 +14,7 @@ Personal Claude Code plugin marketplace.
 |--------|-------------|
 | [new-python-project](plugins/new-python-project/) | Bootstrap a production-ready Python project end-to-end |
 | [bazaraki-post-ad](plugins/bazaraki-post-ad/) | Automate posting classified ads on Bazaraki.com (Cyprus) |
+| [retro](plugins/retro/) | Reconstruct decision history of the current project from local Claude Code sessions |
 
 ## Install a plugin
 

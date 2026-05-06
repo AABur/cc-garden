@@ -1,0 +1,8 @@
+{
+  "name": "retro",
+  "description": "Reconstruct decision history for the current project from local Claude Code session JSONLs. Produces a Markdown retrospective with timeline, abandoned approaches, topic map, intent vs state, and recommended CLAUDE.md rules.",
+  "author": {
+    "name": "Alexander Burchenko",
+    "email": "aabur@mail.ru"
+  }
+}

@@ -1,0 +1,103 @@
+[
+  {
+    "query": "/retro",
+    "should_trigger": true,
+    "note": "explicit slash command — must trigger"
+  },
+  {
+    "query": "у меня в этом проекте за последние пару месяцев было дофига решений и я уже не помню что мы пробовали и от чего отказывались. покопайся в истории моих сессий с claude code и собери ретроспективу — что обсуждалось, что решили, где зацикливались",
+    "should_trigger": true,
+    "note": "core use case in russian, no slash command"
+  },
+  {
+    "query": "почему мы вообще перешли на postgres в этом репо? я помню что-то с sqlite обсуждали и потом всё переделали, но в коммитах этого толком не видно. можешь посмотреть мои разговоры с агентом по этому проекту и реконструировать как мы туда пришли?",
+    "should_trigger": true,
+    "note": "asks why-decision recovery from session history"
+  },
+  {
+    "query": "this project has been thrashing on the auth design for weeks — JWT, sessions, oauth, back to JWT. give me a chronological retrospective of every approach we tried in conversation with claude and exactly what made us bounce off each one",
+    "should_trigger": true,
+    "note": "abandoned approaches / loops detection — central /retro use case"
+  },
+  {
+    "query": "посмотри мои сессии с claude по этому репо и расскажи на каких подходах мы зацикливались, какие гипотезы постоянно возвращались",
+    "should_trigger": true,
+    "note": "loop detection in session conversation"
+  },
+  {
+    "query": "I want CLAUDE.md rules for this project but generated from the actual failure patterns we hit in our sessions, not generic best practices. read the conversation history and propose 3-5 rules tied to specific things we got wrong",
+    "should_trigger": true,
+    "note": "F-section use case — rules from past failures, must distinguish from claude-md-improver"
+  },
+  {
+    "query": "do project archaeology on this repo and write me a markdown report — abandoned ideas, decisions and the reasoning behind them, topic clusters by week. focus on what was discussed, not what's in git",
+    "should_trigger": true,
+    "note": "explicit phrase 'project archaeology' + emphasis on conversation not code"
+  },
+  {
+    "query": "что вообще происходило в этом проекте за апрель? какие были pivots, заброшенные ветки. меня интересуют именно решения и обсуждения, а не код",
+    "should_trigger": true,
+    "note": "stresses 'discussion not code' axis"
+  },
+  {
+    "query": "i need a write-up of every decision we agreed on with claude code in this repo, including the alternatives we considered and rejected. cite the specific session messages",
+    "should_trigger": true,
+    "note": "decision timeline + citations — section A behavior"
+  },
+  {
+    "query": "give me a retrospective of the kardscm project: how did the architecture evolve through our conversations, where did we change direction, what assumptions did we make early on that we walked back later?",
+    "should_trigger": true,
+    "note": "intent-vs-state (section D) use case"
+  },
+
+  {
+    "query": "we're done with the api redesign sprint, retro tomorrow at 3pm with the team. can you draft an agenda and ping kate and dmitry on slack?",
+    "should_trigger": false,
+    "note": "team sprint retrospective — completely different domain. word 'retro' is overloaded"
+  },
+  {
+    "query": "git log --oneline --since='2 weeks ago' --author='AABur' и покажи мне основные изменения по областям",
+    "should_trigger": false,
+    "note": "git-history domain, not session-conversation domain"
+  },
+  {
+    "query": "show me what i committed in the last 7 days grouped by area — backend, frontend, infra. just the commits, no analysis of conversations",
+    "should_trigger": false,
+    "note": "explicitly opts out of conversation analysis — pure git"
+  },
+  {
+    "query": "обнови CLAUDE.md в этом проекте, добавь туда секцию про testing conventions — у нас pytest с coverage 80% и mypy strict",
+    "should_trigger": false,
+    "note": "claude-md update — should go to claude-md-management:revise-claude-md"
+  },
+  {
+    "query": "audit my CLAUDE.md, есть ли там устаревшие или избыточные правила. сравни с актуальным кодом",
+    "should_trigger": false,
+    "note": "claude-md audit — should go to claude-md-improver"
+  },
+  {
+    "query": "starting a new python project for a small cli tool that wraps ffmpeg. need uv, ruff, pytest, github private repo. let's set it up from scratch",
+    "should_trigger": false,
+    "note": "new-python-project bootstrap"
+  },
+  {
+    "query": "проверь проект — ruff, mypy, pytest, всё ли зелёное перед коммитом",
+    "should_trigger": false,
+    "note": "check skill — Python uv quality check, not retrospective"
+  },
+  {
+    "query": "напиши тесты для модуля src/parser.py, особенно edge cases на пустые входы и malformed json",
+    "should_trigger": false,
+    "note": "gen-test skill, not retrospective"
+  },
+  {
+    "query": "what's the current way to declare async dependencies with FastAPI's Depends() in 0.116? something with yield I think",
+    "should_trigger": false,
+    "note": "find-docs / library API lookup, not session retrospective"
+  },
+  {
+    "query": "let's brainstorm the architecture for a new background worker service — should it be celery, rq, dramatiq, or something async-native? walk me through tradeoffs",
+    "should_trigger": false,
+    "note": "brainstorming skill, not retrospective"
+  }
+]
