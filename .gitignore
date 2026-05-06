@@ -11,3 +11,7 @@ retro-skill-review*.md
 
 # Eval run artifacts (logs, intermediate JSON)
 plugins/retro/eval/runs/
+
+# Python bytecode
+__pycache__/
+*.pyc
