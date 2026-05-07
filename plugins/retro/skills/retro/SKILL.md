@@ -33,13 +33,13 @@ The report itself does not get printed into the chat — only a short summary
 report.
 
 A `.retro/.gitignore` is auto-created so reports stay out of git by default.
-A small per-project language marker also lives under Claude's home directory
-(see Step 2).
+The chosen report language is recorded inside each report as an HTML comment
+(see Step 2 for how it is read on subsequent runs).
 
-The report has sections A (decision timeline), B (abandoned approaches &
-loops), C (topic & focus map), D (initial intent vs later stated state), and
-F (recommended rules for CLAUDE.md), plus a short appendix with citations
-and privacy counters.
+The report opens with a synthesis layer (TL;DR, What Happened, What Worked,
+What Did Not Work, Open Loops, Recommended Next Actions, optional Process
+Rules) and finishes with an Evidence Appendix that preserves the detailed
+A/B/C/D archaeology, omission counters, and privacy notes.
 
 ---
 
@@ -60,27 +60,29 @@ Stop on failure. Do not try to extract sessions outside a git repo.
 
 ## Step 2 — Determine the report language
 
-The chosen language persists per-project in a tiny one-line marker file under
-Claude's home dir, **not** in the user's project. The path is:
+The chosen language for a project lives **inside the project's most recent
+report**, not in a separate file. Each report carries an HTML comment near
+the top of the form:
 
 ```
-~/.claude/projects/<flat-encoded-project-root>/.retro-language
+<!-- retro-language: ru -->
 ```
-
-`<flat-encoded-project-root>` matches Claude Code's own encoding: take the
-absolute project root (from Step 1) and replace every character that is not
-`[A-Za-z0-9-]` with `-`. Examples:
-
-- `/Users/aabur/Documents/GitHub/AABur/cc-garden` → `-Users-aabur-Documents-GitHub-AABur-cc-garden`
-- `/Users/aabur/Documents/GitHub/AABur/tgfolder_analyzer` → `-Users-aabur-Documents-GitHub-AABur-tgfolder-analyzer`
 
 Resolution:
 
-1. **Read the marker file** if it exists. The file contains a single ISO-639
-   language code on the first line (e.g. `ru`, `en`, `de`, `ja`, `zh`).
-   Strip whitespace. If non-empty, use that language and skip to Step 3.
-2. **Otherwise, ask the user explicitly** via `AskUserQuestion`. Do **not**
-   inspect `$LANG`, the user's chat language, or session content — language
+1. **Look for existing reports** in `<project-root>/.retro/`. List files
+   whose names match `<YYYY-MM-DD>-retro*.md` (e.g. `2026-05-07-retro.md`,
+   `2026-05-07-retro-2.md`). Pick the most recent one: sort by the date in
+   the filename descending; among files with the same date, take the one
+   with the highest `-N` suffix (treat the unsuffixed `-retro.md` as the
+   lowest, so `-retro-2.md` wins over `-retro.md` for the same date).
+2. **Read the language tag** from that file. Scan the first ~10 lines for
+   a line of the form `<!-- retro-language: <code> -->`. If found, take
+   the lowercase ISO code, strip surrounding whitespace, and use it. Skip
+   to Step 3.
+3. **If no report exists, or no tag is found in the most recent report,
+   ask the user explicitly** via `AskUserQuestion`. Do **not** inspect
+   `$LANG`, the user's chat language, or session content — language
    choice for retros is a deliberate per-project decision, not a guess.
 
    - Question: `What language should /retro use for this project's retros?`
@@ -92,26 +94,30 @@ Resolution:
      - `label: "Other language"`
      - `description: Pick another language — you'll specify it in the next message.`
 
-3. **Resolve the choice**:
-   - If the user chose `English`, write `en` into the marker file and
-     continue.
+4. **Resolve the choice**:
+   - If the user chose `English`, set the language to `en` and continue.
    - If the user chose `Other language`, send one short follow-up message
-     in the chat asking the user to name the language they want. Accept any
-     of: an autonym (`Русский`, `Deutsch`, `日本語`), the English name
-     (`Russian`, `German`, `Japanese`), or an ISO-639-1/2 code (`ru`, `de`,
-     `ja`). Read the user's reply and normalize it to a lowercase ISO-639
-     code yourself — for common languages a short mental mapping is enough
-     (`Русский`/`Russian`/`ru` → `ru`, `Deutsch`/`German`/`de` → `de`,
-     `日本語`/`Japanese`/`ja` → `ja`, `中文`/`Chinese`/`zh` → `zh`,
-     `Español`/`Spanish`/`es` → `es`, `Français`/`French`/`fr` → `fr`,
-     etc.). If the user typed an ISO-639 code already, accept verbatim
-     (lowercased). If the input is genuinely ambiguous, ask **one** more
-     clarifying question; otherwise pick the obvious mapping. Write the
-     resolved code into the marker file and continue with that language.
+     in the chat asking the user to name the language they want. Accept
+     any of: an autonym (`Русский`, `Deutsch`, `日本語`), the English
+     name (`Russian`, `German`, `Japanese`), or an ISO-639-1/2 code
+     (`ru`, `de`, `ja`). Read the user's reply and normalize it to a
+     lowercase ISO-639 code yourself — for common languages a short
+     mental mapping is enough (`Русский`/`Russian`/`ru` → `ru`,
+     `Deutsch`/`German`/`de` → `de`, `日本語`/`Japanese`/`ja` → `ja`,
+     `中文`/`Chinese`/`zh` → `zh`, `Español`/`Spanish`/`es` → `es`,
+     `Français`/`French`/`fr` → `fr`, etc.). If the user typed an
+     ISO-639 code already, accept verbatim (lowercased). If the input
+     is genuinely ambiguous, ask **one** more clarifying question;
+     otherwise pick the obvious mapping. Use that code as the language
+     for this run.
 
-The marker file is a single line (`<code>\n`), always overridable: the user
-can edit it or delete it any time to change the language for next run.
-Never overwrite an existing marker — only create it on first run.
+There is no separate marker file. The resolved language code is passed to
+the report-prompt instructions in Step 4; the new report's header includes
+the `<!-- retro-language: <code> -->` comment, which becomes the source of
+truth for the next run.
+
+To change the language for a project, the user edits the comment in the
+most recent report (or deletes that report) and runs `/retro` again.
 
 ---
 
@@ -208,10 +214,15 @@ file in their editor.
   re-introduce them from any source.
 - Do not invent citations. Every anchor in the report must correspond to a
   real entry in `source_map.events[]`.
-- Do not include generic CLAUDE.md rules in section F. If a rule cannot be
-  tied to a concrete A/B/C/D finding, omit it.
-- Do not auto-detect the report language from session content. The language
-  is set once via Step 2 and stored in the marker file. To change it, the
-  user edits or deletes the marker file.
+- Do not include generic CLAUDE.md rules in the Process Rules section. If
+  a rule cannot be tied to a concrete A/B/C/D finding in the Evidence
+  Appendix, omit it — the explicit "no strong process rules were
+  extracted from this run" line is the correct outcome for an empty
+  section.
+- Do not auto-detect the report language from session content, `$LANG`,
+  or the user's chat language. The language is recorded in the
+  `<!-- retro-language: <code> -->` HTML comment inside each report. To
+  change it for a project, the user edits the comment in the most recent
+  report or deletes that report.
 - Do not mix languages within the report. The chosen language applies to
   the entire narrative; only identifiers stay verbatim.
