@@ -78,8 +78,9 @@ Resolution:
    lowest, so `-retro-2.md` wins over `-retro.md` for the same date).
 2. **Read the language tag** from that file. Scan the first ~10 lines for
    a line of the form `<!-- retro-language: <code> -->`. If found, take
-   the lowercase ISO code, strip surrounding whitespace, and use it. Skip
-   to Step 3.
+   the lowercase ISO code, strip surrounding whitespace, and use it as
+   the language for this run. **Skip the rest of Step 2 (do not ask the
+   user) and proceed to Step 3 — Run the extractor.**
 3. **If no report exists, or no tag is found in the most recent report,
    ask the user explicitly** via `AskUserQuestion`. Do **not** inspect
    `$LANG`, the user's chat language, or session content — language

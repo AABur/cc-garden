@@ -332,7 +332,6 @@ This includes:
   translate every one of them into the target language.
 - The disclaimer in D.
 - Bullet text.
-- Final summary line at the bottom of the report.
 - The "No strong process rules were extracted from this run." line if
   used.
 
@@ -400,8 +399,11 @@ must:
 
 - live on its own line, immediately after the `# Retrospective: ...`
   H1, with no blank line between them;
-- contain exactly the lowercase ISO-639 code passed in (no quotes, no
-  surrounding whitespace inside the angle brackets);
+- emit the code as a bare lowercase ISO-639 string with no quotes, no
+  literal `<` or `>` around it, and exactly one space after the colon.
+  For example, if the code is `ru`, the line is exactly
+  `<!-- retro-language: ru -->` — never `<!-- retro-language: <ru> -->`,
+  never `<!-- retro-language: "ru" -->`, never `<!-- retro-language:  ru  -->`;
 - never be translated, reformatted, or omitted.
 
 ---
