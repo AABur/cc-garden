@@ -81,11 +81,11 @@ When a flat state machine has many transitions duplicated across states:
 
 ## Review checklist
 
-- ✅ The hierarchy reflects domain reality, not a contrivance to share code.
-- ✅ Fall-through to parent is explicit — readers can trace which state handles which
+- Good: The hierarchy reflects domain reality, not a contrivance to share code.
+- Good: Fall-through to parent is explicit — readers can trace which state handles which
   message.
-- ✅ Initial / default sub-state is documented for each parent state.
-- ❌ The hierarchy nests too deeply; comprehensibility collapses past 2–3 levels.
-- ❌ Hand-rolled HSM that duplicates a library's features. Use `transitions`.
-- ❌ Mixed patterns — some transitions inherit, others duplicate; the contract is
+- Good: Initial / default sub-state is documented for each parent state.
+- Bad: The hierarchy nests too deeply; comprehensibility collapses past 2–3 levels.
+- Bad: Hand-rolled HSM that duplicates a library's features. Use `transitions`.
+- Bad: Mixed patterns — some transitions inherit, others duplicate; the contract is
   unclear.

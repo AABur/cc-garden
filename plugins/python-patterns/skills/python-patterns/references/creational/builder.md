@@ -100,12 +100,12 @@ When you find a constructor with 12 optional parameters:
 
 ## Review checklist
 
-- ✅ The builder's stages have *intermediate validity* — partial construction is
+- Good: The builder's stages have *intermediate validity* — partial construction is
   meaningful, not arbitrary.
-- ✅ The final product is constructed once, not mutated by callers thereafter.
-- ✅ The builder makes the call site clearer than `dataclass(...)` would have.
-- ❌ The builder wraps a `dataclass` with no value added. Delete the builder.
-- ❌ Each stage just sets one attribute and could be a `dataclass` field. Same fix.
-- ❌ The builder has shared state between calls and produces different results on
+- Good: The final product is constructed once, not mutated by callers thereafter.
+- Good: The builder makes the call site clearer than `dataclass(...)` would have.
+- Bad: The builder wraps a `dataclass` with no value added. Delete the builder.
+- Bad: Each stage just sets one attribute and could be a `dataclass` field. Same fix.
+- Bad: The builder has shared state between calls and produces different results on
   successive `build()` calls. Either reset state in `build()` or document the
   one-shot contract.

@@ -87,12 +87,12 @@ When you have a class that periodically wants to "tell others" something:
 
 ## Review checklist
 
-- ✅ `attach` is idempotent (no double-registration).
-- ✅ `notify` does not propagate exceptions from a buggy observer to the Subject —
+- Good: `attach` is idempotent (no double-registration).
+- Good: `notify` does not propagate exceptions from a buggy observer to the Subject —
   decide on isolation policy.
-- ✅ Observers are not added during iteration of the observer list (or are buffered
+- Good: Observers are not added during iteration of the observer list (or are buffered
   to avoid mutation-during-iteration).
-- ❌ Observer references are strong and never released — leaks. Consider
+- Bad: Observer references are strong and never released — leaks. Consider
   `weakref.WeakSet`.
-- ❌ Notification ordering matters but is not guaranteed. Document the contract.
-- ❌ A simple list of callbacks would have sufficed; Observer ceremony is overkill.
+- Bad: Notification ordering matters but is not guaranteed. Document the contract.
+- Bad: A simple list of callbacks would have sufficed; Observer ceremony is overkill.

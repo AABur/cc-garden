@@ -67,10 +67,10 @@ When a profile shows millions of duplicate objects:
 
 ## Review checklist
 
-- ✅ Intrinsic state is immutable after creation.
-- ✅ The pool uses weak references to avoid memory leaks (or has explicit eviction).
-- ✅ Memory savings are measured, not assumed.
-- ❌ The "Flyweight" stores per-instance mutable extrinsic state — that defeats the
+- Good: Intrinsic state is immutable after creation.
+- Good: The pool uses weak references to avoid memory leaks (or has explicit eviction).
+- Good: Memory savings are measured, not assumed.
+- Bad: The "Flyweight" stores per-instance mutable extrinsic state — that defeats the
   pattern.
-- ❌ Equality semantics (`__eq__`, `__hash__`) silently broken by interning. Verify.
-- ❌ Pool is unbounded and never garbage-collected. Use weak references or eviction.
+- Bad: Equality semantics (`__eq__`, `__hash__`) silently broken by interning. Verify.
+- Bad: Pool is unbounded and never garbage-collected. Use weak references or eviction.

@@ -79,12 +79,12 @@ When clients of a subsystem repeat the same 5-step init dance:
 
 ## Review checklist
 
-- ✅ The facade is *thin* — it orchestrates, it does not re-implement subsystem logic.
-- ✅ Advanced users can still bypass the facade for capabilities it does not expose.
-- ✅ Facade methods are named for the *use case*, not the underlying mechanics.
-- ❌ The facade has accumulated business logic that belongs in the subsystem or in
+- Good: The facade is *thin* — it orchestrates, it does not re-implement subsystem logic.
+- Good: Advanced users can still bypass the facade for capabilities it does not expose.
+- Good: Facade methods are named for the *use case*, not the underlying mechanics.
+- Bad: The facade has accumulated business logic that belongs in the subsystem or in
   callers.
-- ❌ The facade shadows nearly every method of the subsystem — if it is mostly
+- Bad: The facade shadows nearly every method of the subsystem — if it is mostly
   pass-through, it is not adding value.
-- ❌ Multiple facades over the same subsystem, with overlapping responsibilities.
+- Bad: Multiple facades over the same subsystem, with overlapping responsibilities.
   Consolidate.

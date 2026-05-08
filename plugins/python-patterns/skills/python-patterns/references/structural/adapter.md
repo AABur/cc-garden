@@ -71,13 +71,13 @@ To adapt a third-party class to a new interface:
 
 ## Review checklist
 
-- ✅ The adapter exposes the required interface and *only* that — no creep into
+- Good: The adapter exposes the required interface and *only* that — no creep into
   the third party's surface.
-- ✅ The adapter delegates rather than re-implementing; behaviour stays in the
+- Good: The adapter delegates rather than re-implementing; behaviour stays in the
   adaptee.
-- ❌ The "adapter" wraps an object with the same interface. That is a Decorator
+- Bad: The "adapter" wraps an object with the same interface. That is a Decorator
   (adds behaviour) or a Proxy (controls access). See those references.
-- ❌ The adapter accumulates state of its own that should belong to the adaptee.
+- Bad: The adapter accumulates state of its own that should belong to the adaptee.
   Push state into the adaptee or extract it.
-- ❌ Multiple adapters wrap each other unintentionally. Layer documentation
+- Bad: Multiple adapters wrap each other unintentionally. Layer documentation
   matters; collapse if the chain is incidental.

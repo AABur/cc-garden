@@ -73,11 +73,11 @@ When a method is `if mode == "fast": ... elif mode == "slow": ...`:
 
 ## Review checklist
 
-- ✅ Strategies share a clear contract (signature, return type).
-- ✅ Strategies are pure where possible — easier to test, swap, parallelize.
-- ✅ Validation that a chosen strategy is appropriate (descriptor, decorator, runtime
+- Good: Strategies share a clear contract (signature, return type).
+- Good: Strategies are pure where possible — easier to test, swap, parallelize.
+- Good: Validation that a chosen strategy is appropriate (descriptor, decorator, runtime
   check) is in place when stakes are high.
-- ❌ A class hierarchy was used where functions sufficed. Simplify.
-- ❌ Strategies share hidden global state, undermining the "swap freely" promise.
-- ❌ The strategy's return shape varies across implementations; callers branch on
+- Bad: A class hierarchy was used where functions sufficed. Simplify.
+- Bad: Strategies share hidden global state, undermining the "swap freely" promise.
+- Bad: The strategy's return shape varies across implementations; callers branch on
   type. Tighten the contract.

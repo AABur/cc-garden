@@ -105,14 +105,14 @@ To lazy-load an existing eager attribute:
 
 ## Review checklist
 
-- ✅ The cached value is a pure function of the instance's other (immutable) state.
-- ✅ `cached_property` is preferred over hand-rolled descriptors unless there's a
+- Good: The cached value is a pure function of the instance's other (immutable) state.
+- Good: `cached_property` is preferred over hand-rolled descriptors unless there's a
   reason.
-- ✅ Tests cover the "first access" and "second access" paths and confirm the
+- Good: Tests cover the "first access" and "second access" paths and confirm the
   computation runs only once.
-- ❌ The cache is invalidated by mutation of *upstream* attributes but no
+- Bad: The cache is invalidated by mutation of *upstream* attributes but no
   invalidation is implemented. Either invalidate or do not cache.
-- ❌ The descriptor returns `self` from `__get__` only on the class (not the instance)
+- Bad: The descriptor returns `self` from `__get__` only on the class (not the instance)
   to allow introspection — verify this when a third-party tool inspects the property.
-- ❌ Two threads can reach the first access simultaneously; resolve with a lock if
+- Bad: Two threads can reach the first access simultaneously; resolve with a lock if
   the computation is non-idempotent.

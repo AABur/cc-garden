@@ -76,12 +76,12 @@ or two":
 
 ## Review checklist
 
-- ✅ Delegation is preferred over inheritance unless "is-a" is true.
-- ✅ The delegate's interface is documented or formally typed (`Protocol`).
-- ✅ Magic `__getattr__` delegation is used judiciously; when in doubt, prefer
+- Good: Delegation is preferred over inheritance unless "is-a" is true.
+- Good: The delegate's interface is documented or formally typed (`Protocol`).
+- Good: Magic `__getattr__` delegation is used judiciously; when in doubt, prefer
   explicit thin methods so introspection (IDE completion, mypy) works.
-- ❌ The delegator's surface differs from the delegate's in surprising ways. Make
+- Bad: The delegator's surface differs from the delegate's in surprising ways. Make
   the boundary explicit.
-- ❌ Multiple layers of `__getattr__` chains; debugging becomes archaeology.
-- ❌ Used as a workaround for genuinely needed inheritance (LSP-relevant subtyping).
+- Bad: Multiple layers of `__getattr__` chains; debugging becomes archaeology.
+- Bad: Used as a workaround for genuinely needed inheritance (LSP-relevant subtyping).
   Use inheritance there, sparingly.

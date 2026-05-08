@@ -89,13 +89,13 @@ modules contribute partial answers:
 
 ## Review checklist
 
-- ✅ The shared state is well-defined; experts agree on its schema.
-- ✅ Termination is guaranteed — `progress` reaches 100 (or a maximum iteration count
+- Good: The shared state is well-defined; experts agree on its schema.
+- Good: Termination is guaranteed — `progress` reaches 100 (or a maximum iteration count
   is enforced).
-- ✅ Concurrency (if any) is bounded; experts do not race on shared state without
+- Good: Concurrency (if any) is bounded; experts do not race on shared state without
   protection.
-- ❌ The blackboard has accumulated unrelated state. Split or modularize.
-- ❌ Order of expert contribution is critical but not enforced; a pipeline would have
+- Bad: The blackboard has accumulated unrelated state. Split or modularize.
+- Bad: Order of expert contribution is critical but not enforced; a pipeline would have
   been clearer.
-- ❌ Used where a workflow engine or pub-sub is the better fit; ceremony for a simple
+- Bad: Used where a workflow engine or pub-sub is the better fit; ceremony for a simple
   problem.

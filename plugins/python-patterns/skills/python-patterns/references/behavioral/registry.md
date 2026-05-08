@@ -79,13 +79,13 @@ When you have a growing `dict` mapping names to classes, manually maintained:
 
 ## Review checklist
 
-- ✅ Registration is automatic and traceable — a developer can grep for the
+- Good: Registration is automatic and traceable — a developer can grep for the
   registration point and find every entry.
-- ✅ A subclass cannot accidentally fail to register (no silent skip).
-- ✅ Subclass names are unique, or collisions are detected and raise.
-- ❌ The registry is mutated outside the hook in surprising ways. Lock it down.
-- ❌ Metaclass conflicts with framework base classes (Django models). Switch to
+- Good: A subclass cannot accidentally fail to register (no silent skip).
+- Good: Subclass names are unique, or collisions are detected and raise.
+- Bad: The registry is mutated outside the hook in surprising ways. Lock it down.
+- Bad: Metaclass conflicts with framework base classes (Django models). Switch to
   `__init_subclass__`.
-- ❌ Subclasses are imported only when "needed", and the registry is empty at startup
+- Bad: Subclasses are imported only when "needed", and the registry is empty at startup
   because their modules never imported. Make registration eager via entry points or
   explicit imports.

@@ -86,14 +86,14 @@ to construct*:
 
 ## Review checklist
 
-- ✅ The factory's signature documents what callers must supply; defaults make sense.
-- ✅ Construction logic that should not be repeated lives *only* in the factory.
-- ✅ The `Protocol` (or ABC) the factory returns is honest — all returned classes
+- Good: The factory's signature documents what callers must supply; defaults make sense.
+- Good: Construction logic that should not be repeated lives *only* in the factory.
+- Good: The `Protocol` (or ABC) the factory returns is honest — all returned classes
   satisfy it.
-- ❌ The factory is one line returning `MyClass(*args)` and called from one place.
+- Bad: The factory is one line returning `MyClass(*args)` and called from one place.
   Delete the factory.
-- ❌ The factory uses `if isinstance` on a *class object* (`if cls is Dog: ...`); the
+- Bad: The factory uses `if isinstance` on a *class object* (`if cls is Dog: ...`); the
   dispatch dict is better.
-- ❌ Multiple factories return slightly different shapes — callers cannot rely on the
+- Bad: Multiple factories return slightly different shapes — callers cannot rely on the
   return type. Either tighten the contract (`Protocol`, `ABC`) or split into distinct
   named factories.

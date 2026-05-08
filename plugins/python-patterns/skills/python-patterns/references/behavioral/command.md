@@ -79,11 +79,11 @@ When you have multiple "do X" buttons each with custom code, and want to add und
 
 ## Review checklist
 
-- ✅ `execute` and `undo` are inverse — applying both leaves the state unchanged.
-- ✅ Commands capture all data they need; no implicit dependence on global state.
-- ✅ Undo stack is bounded or pruned to avoid unbounded memory.
-- ❌ Commands mutate global state in ways `undo` does not capture; undo is incomplete.
-- ❌ Commands without undo logic, used purely for queueing — `functools.partial` is
+- Good: `execute` and `undo` are inverse — applying both leaves the state unchanged.
+- Good: Commands capture all data they need; no implicit dependence on global state.
+- Good: Undo stack is bounded or pruned to avoid unbounded memory.
+- Bad: Commands mutate global state in ways `undo` does not capture; undo is incomplete.
+- Bad: Commands without undo logic, used purely for queueing — `functools.partial` is
   shorter.
-- ❌ Commands that "do everything"; per the upstream docs, the value of Command is
+- Bad: Commands that "do everything"; per the upstream docs, the value of Command is
   exactly that each is one focused action.

@@ -65,10 +65,10 @@ The contract: `Ui` must not import `Data`. Crossing the tier boundary is a bug.
 
 ## Review checklist
 
-- ✅ Presentation imports business; business imports data; data imports neither.
-- ✅ Tier boundaries are documented and ideally enforced by tooling.
-- ❌ The presentation tier reaches into the data tier "for performance". Performance
+- Good: Presentation imports business; business imports data; data imports neither.
+- Good: Tier boundaries are documented and ideally enforced by tooling.
+- Bad: The presentation tier reaches into the data tier "for performance". Performance
   optimization belongs behind the business interface, not bypassing it.
-- ❌ The "business tier" is empty — calls just pass through. Either the abstraction is
+- Bad: The "business tier" is empty — calls just pass through. Either the abstraction is
   premature or the tier needs real logic.
-- ❌ Cyclic imports between tiers. Break with an interface (Protocol) or move types.
+- Bad: Cyclic imports between tiers. Break with an interface (Protocol) or move types.

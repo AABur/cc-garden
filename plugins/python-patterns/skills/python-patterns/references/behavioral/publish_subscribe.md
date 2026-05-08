@@ -77,11 +77,11 @@ many-to-many:
 
 ## Review checklist
 
-- ✅ Topics are typed / enumerated; not free-form strings prone to typos.
-- ✅ Subscriber failures do not block other subscribers (the broker isolates them).
-- ✅ Delivery semantics are documented (at-most-once, at-least-once, ordered, …).
-- ❌ The "broker" is a global mutable dict imported from everywhere — that is the
+- Good: Topics are typed / enumerated; not free-form strings prone to typos.
+- Good: Subscriber failures do not block other subscribers (the broker isolates them).
+- Good: Delivery semantics are documented (at-most-once, at-least-once, ordered, …).
+- Bad: The "broker" is a global mutable dict imported from everywhere — that is the
   Singleton anti-pattern in disguise.
-- ❌ Subscribers leak — never unsubscribed, hold strong references.
-- ❌ A real distributed broker is needed and the in-process toy is masquerading as
+- Bad: Subscribers leak — never unsubscribed, hold strong references.
+- Bad: A real distributed broker is needed and the in-process toy is masquerading as
   one. Migrate.

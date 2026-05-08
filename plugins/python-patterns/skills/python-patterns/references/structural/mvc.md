@@ -83,10 +83,10 @@ When a single class handles data, rendering, and input:
 
 ## Review checklist
 
-- ✅ Model knows nothing about View; View knows nothing about Model.
-- ✅ Controllers' methods correspond to user actions ("show item info", "save edit").
-- ✅ Views are easy to swap (web view, console view) without touching the Model or
+- Good: Model knows nothing about View; View knows nothing about Model.
+- Good: Controllers' methods correspond to user actions ("show item info", "save edit").
+- Good: Views are easy to swap (web view, console view) without touching the Model or
   Controller.
-- ❌ The View formats data the Model should produce. Logic leaked.
-- ❌ The Controller has rendering code. Extract to View.
-- ❌ The Model imports the View. Bad coupling; revisit boundaries.
+- Bad: The View formats data the Model should produce. Logic leaked.
+- Bad: The Controller has rendering code. Extract to View.
+- Bad: The Model imports the View. Bad coupling; revisit boundaries.

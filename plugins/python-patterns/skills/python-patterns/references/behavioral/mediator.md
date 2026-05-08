@@ -72,11 +72,11 @@ When peers reference each other in tangled webs:
 
 ## Review checklist
 
-- ✅ Peers do not import or reference each other.
-- ✅ The mediator's responsibility is *coordination*, not the peers' business logic.
-- ✅ The mediator has clear, named methods per workflow ("post_message",
+- Good: Peers do not import or reference each other.
+- Good: The mediator's responsibility is *coordination*, not the peers' business logic.
+- Good: The mediator has clear, named methods per workflow ("post_message",
   "kick_user").
-- ❌ The mediator has accumulated business logic that belongs in peers.
-- ❌ The mediator is one giant `if sender_type == ...: elif ...:` cascade. Split or
+- Bad: The mediator has accumulated business logic that belongs in peers.
+- Bad: The mediator is one giant `if sender_type == ...: elif ...:` cascade. Split or
   refactor.
-- ❌ Used where pub-sub or simple callbacks would suffice; ceremony in disguise.
+- Bad: Used where pub-sub or simple callbacks would suffice; ceremony in disguise.

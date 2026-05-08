@@ -76,10 +76,10 @@ When a long `if/elif` cascade decides which of N processors to run:
 
 ## Review checklist
 
-- ✅ Each handler has a single responsibility — "match this case, otherwise pass".
-- ✅ The chain has a deterministic order, configured in one place.
-- ✅ A fallback handler covers the "no one matched" case.
-- ❌ Two handlers in the chain can both match; behaviour silently depends on order.
+- Good: Each handler has a single responsibility — "match this case, otherwise pass".
+- Good: The chain has a deterministic order, configured in one place.
+- Good: A fallback handler covers the "no one matched" case.
+- Bad: Two handlers in the chain can both match; behaviour silently depends on order.
   Make the contract explicit: first match wins.
-- ❌ The chain is constructed lazily inside handlers — opaque flow. Build it explicitly.
-- ❌ Used where a dispatch dict would suffice; the chain is cargo-cult middleware.
+- Bad: The chain is constructed lazily inside handlers — opaque flow. Build it explicitly.
+- Bad: Used where a dispatch dict would suffice; the chain is cargo-cult middleware.

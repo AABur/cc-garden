@@ -84,12 +84,12 @@ When a class has methods that all start with `if self.mode == "x": ... elif ...`
 
 ## Review checklist
 
-- ✅ Each state class has the same set of methods (uniform interface) so the context
+- Good: Each state class has the same set of methods (uniform interface) so the context
   can delegate uniformly.
-- ✅ Transitions are explicit; you can list which transitions are legal.
-- ✅ Invalid transitions raise rather than silently no-op.
-- ❌ The state classes have grown to be tightly coupled with the context's privates.
+- Good: Transitions are explicit; you can list which transitions are legal.
+- Good: Invalid transitions raise rather than silently no-op.
+- Bad: The state classes have grown to be tightly coupled with the context's privates.
   Push behaviour into the state, expose narrow accessors on the context.
-- ❌ States proliferate beyond the domain reality — collapse merged states.
-- ❌ A library FSM was a better fit; the hand-rolled version is missing transition
+- Bad: States proliferate beyond the domain reality — collapse merged states.
+- Bad: A library FSM was a better fit; the hand-rolled version is missing transition
   guards, hooks, persistence.

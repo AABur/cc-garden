@@ -80,12 +80,12 @@ When a method is `if user.is_admin or (user.is_editor and user.is_active and not
 
 ## Review checklist
 
-- ✅ Specifications are pure (no side effects); they only check.
-- ✅ Combining specs preserves short-circuit semantics where it matters.
-- ✅ Specs have stable, documented names matching domain language.
-- ❌ A Specification has accumulated logic that *acts* on the candidate, not just
+- Good: Specifications are pure (no side effects); they only check.
+- Good: Combining specs preserves short-circuit semantics where it matters.
+- Good: Specs have stable, documented names matching domain language.
+- Bad: A Specification has accumulated logic that *acts* on the candidate, not just
   evaluates it.
-- ❌ Composition produces deeply nested objects with no `__repr__`; debugging is
+- Bad: Composition produces deeply nested objects with no `__repr__`; debugging is
   hard.
-- ❌ Specifications duplicate filtering already supported by your ORM / query layer.
+- Bad: Specifications duplicate filtering already supported by your ORM / query layer.
   Use the native filters.

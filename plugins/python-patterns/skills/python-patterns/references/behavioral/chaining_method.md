@@ -71,10 +71,10 @@ When you have many "set this, then set that" calls on the same object:
 
 ## Review checklist
 
-- ✅ Each chainable method has a clear non-`None` return (`self` or a child builder).
-- ✅ A terminal method exists and is documented as the chain's exit.
-- ✅ The chain is short enough to read in one breath. Long chains paginate badly.
-- ❌ Chained methods raise without indicating which step failed; tracebacks cite the
+- Good: Each chainable method has a clear non-`None` return (`self` or a child builder).
+- Good: A terminal method exists and is documented as the chain's exit.
+- Good: The chain is short enough to read in one breath. Long chains paginate badly.
+- Bad: Chained methods raise without indicating which step failed; tracebacks cite the
   whole expression. Consider intermediate variables for diagnosis.
-- ❌ The "chain" mutates global state, hiding side effects behind fluency.
-- ❌ Chaining is preferred everywhere even when keyword args would be clearer.
+- Bad: The "chain" mutates global state, hiding side effects behind fluency.
+- Bad: Chaining is preferred everywhere even when keyword args would be clearer.

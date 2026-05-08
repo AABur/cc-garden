@@ -80,14 +80,14 @@ Replacing a Singleton with Borg:
 
 ## Review checklist
 
-- ✅ The `__dict__ = _shared_state` line is in `__init__`, not `__new__`.
-- ✅ Each subclass that wants its own state declares its own `_shared_state` class
+- Good: The `__dict__ = _shared_state` line is in `__init__`, not `__new__`.
+- Good: Each subclass that wants its own state declares its own `_shared_state` class
    attribute.
-- ✅ The choice of Borg over a module value is justified — there is a real reason to
+- Good: The choice of Borg over a module value is justified — there is a real reason to
    use the instance interface (subclassing, swap-in-test, etc.).
-- ❌ `_shared_state` is mutated outside `__init__` in surprising ways. The "first
+- Bad: `_shared_state` is mutated outside `__init__` in surprising ways. The "first
    time" branch should be obvious in code.
-- ❌ Tests rely on Borg state but do not reset it between cases. Add a fixture that
+- Bad: Tests rely on Borg state but do not reset it between cases. Add a fixture that
    clears `_shared_state` per test.
-- ❌ The codebase has *many* Borgs serving as a thin replacement for global
+- Bad: The codebase has *many* Borgs serving as a thin replacement for global
    variables. That is a design smell — consider dependency injection.

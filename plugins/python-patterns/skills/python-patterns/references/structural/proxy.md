@@ -75,11 +75,11 @@ To add logging / auth / caching to an existing class without touching it:
 
 ## Review checklist
 
-- ✅ Proxy and real subject share an interface (formal Protocol or duck-typed).
-- ✅ Cross-cutting concerns are isolated in the proxy; the real subject stays clean.
-- ✅ Tests cover both "proxy in" and "real subject only" paths.
-- ❌ The proxy mutates the real subject's state in surprising ways.
-- ❌ The proxy bypasses the real subject in some methods, leading to inconsistent
+- Good: Proxy and real subject share an interface (formal Protocol or duck-typed).
+- Good: Cross-cutting concerns are isolated in the proxy; the real subject stays clean.
+- Good: Tests cover both "proxy in" and "real subject only" paths.
+- Bad: The proxy mutates the real subject's state in surprising ways.
+- Bad: The proxy bypasses the real subject in some methods, leading to inconsistent
   behaviour.
-- ❌ Multiple proxies chain unintentionally; debugging becomes archaeology. Add a
+- Bad: Multiple proxies chain unintentionally; debugging becomes archaeology. Add a
   `__repr__` revealing the chain.

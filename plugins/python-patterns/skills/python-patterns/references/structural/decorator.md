@@ -72,12 +72,12 @@ To add behaviour to an existing object class:
 
 ## Review checklist
 
-- ✅ The wrapper preserves the wrapped's interface (a `Protocol` or ABC if useful).
-- ✅ Wrappers compose without unexpected interactions.
-- ✅ For callables, `@decorator` syntax was considered first.
-- ❌ The wrapper changes behaviour in surprising ways for unrelated methods. Keep
+- Good: The wrapper preserves the wrapped's interface (a `Protocol` or ABC if useful).
+- Good: Wrappers compose without unexpected interactions.
+- Good: For callables, `@decorator` syntax was considered first.
+- Bad: The wrapper changes behaviour in surprising ways for unrelated methods. Keep
   augmentation focused.
-- ❌ The "decorator" replaces the wrapped object's behaviour entirely — that is a
+- Bad: The "decorator" replaces the wrapped object's behaviour entirely — that is a
   Strategy or Adapter, not a Decorator.
-- ❌ Stacking depth grows over time and diagnostics become impenetrable. Add `__repr__`
+- Bad: Stacking depth grows over time and diagnostics become impenetrable. Add `__repr__`
   that exposes the chain.

@@ -82,11 +82,11 @@ When you have hand-rolled graph traversal scattered across the codebase:
 
 ## Review checklist
 
-- ✅ Graph representation is consistent and documented.
-- ✅ Cycles are handled — DFS without a visited set will recurse forever.
-- ✅ For shortest path on weighted graphs, an appropriate algorithm is used (Dijkstra,
+- Good: Graph representation is consistent and documented.
+- Good: Cycles are handled — DFS without a visited set will recurse forever.
+- Good: For shortest path on weighted graphs, an appropriate algorithm is used (Dijkstra,
   Bellman-Ford). Plain BFS is wrong.
-- ❌ Recursion depth grows with the graph and hits Python's recursion limit. Convert
+- Bad: Recursion depth grows with the graph and hits Python's recursion limit. Convert
   to an explicit stack.
-- ❌ Custom DFS is slower / less correct than `networkx`. Consider migrating.
-- ❌ "Graph" is actually a tree; tree-specific algorithms are simpler and more efficient.
+- Bad: Custom DFS is slower / less correct than `networkx`. Consider migrating.
+- Bad: "Graph" is actually a tree; tree-specific algorithms are simpler and more efficient.

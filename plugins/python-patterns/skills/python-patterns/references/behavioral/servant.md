@@ -92,12 +92,12 @@ When you would otherwise add the same method to several unrelated classes:
 
 ## Review checklist
 
-- ✅ The servant respects the served classes' encapsulation; it reads attributes, it
+- Good: The servant respects the served classes' encapsulation; it reads attributes, it
   does not poke at private state.
-- ✅ Type dispatch is implemented with `singledispatch` rather than `if isinstance`
+- Good: Type dispatch is implemented with `singledispatch` rather than `if isinstance`
   chains.
-- ✅ The protocol expected of arguments is documented or expressed via `Protocol`.
-- ❌ The servant grows into a god module that knows about every class in the system.
-- ❌ The "servant" is just a free function with extra ceremony. Drop the class.
-- ❌ The servant class is instantiated, but holds no state — make its methods static
+- Good: The protocol expected of arguments is documented or expressed via `Protocol`.
+- Bad: The servant grows into a god module that knows about every class in the system.
+- Bad: The "servant" is just a free function with extra ceremony. Drop the class.
+- Bad: The servant class is instantiated, but holds no state — make its methods static
   or move them to a module.

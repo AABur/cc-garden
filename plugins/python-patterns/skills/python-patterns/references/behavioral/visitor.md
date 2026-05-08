@@ -78,14 +78,14 @@ When a method on a class hierarchy is `if isinstance(node, A): ... elif ...`:
 
 ## Review checklist
 
-- ✅ The visitor handles every concrete node type, or has a sensible
+- Good: The visitor handles every concrete node type, or has a sensible
   `generic_visit` fallback.
-- ✅ The dispatch is correct under multiple inheritance — explicit MRO walk handles
+- Good: The dispatch is correct under multiple inheritance — explicit MRO walk handles
   this in the canonical implementation.
-- ✅ For the simpler Pythonic equivalent, `singledispatch` was considered.
-- ❌ The visitor mutates nodes during traversal in ways that break iteration. Buffer
+- Good: For the simpler Pythonic equivalent, `singledispatch` was considered.
+- Bad: The visitor mutates nodes during traversal in ways that break iteration. Buffer
   changes if needed.
-- ❌ Adding a new node type requires changing every visitor — that is the visitor's
+- Bad: Adding a new node type requires changing every visitor — that is the visitor's
   known weak point. Consider whether the structure is really stable.
-- ❌ The hierarchy has only two types and the dispatch is two `isinstance` checks.
+- Bad: The hierarchy has only two types and the dispatch is two `isinstance` checks.
   Inline.

@@ -67,12 +67,12 @@ When code branches on "is this a single thing or a list of things":
 
 ## Review checklist
 
-- ✅ The shared operation makes sense for both leaves and composites.
-- ✅ Adding/removing children is in the composite, not exposed to the leaf interface
+- Good: The shared operation makes sense for both leaves and composites.
+- Good: Adding/removing children is in the composite, not exposed to the leaf interface
   (or transparently as no-ops if you must — but document the contract).
-- ❌ The composite leaks list operations through the interface; clients couple to
+- Bad: The composite leaks list operations through the interface; clients couple to
   internals.
-- ❌ Leaves are forced to implement no-op `add` / `remove` to satisfy the interface,
+- Bad: Leaves are forced to implement no-op `add` / `remove` to satisfy the interface,
   raising errors at runtime. Use a separate Composite class.
-- ❌ The hierarchy has hidden cycles (a child composite contains an ancestor) — guard
+- Bad: The hierarchy has hidden cycles (a child composite contains an ancestor) — guard
   if cycles are possible, or document acyclic invariant.

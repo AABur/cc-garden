@@ -83,11 +83,11 @@ classes:
 
 ## Review checklist
 
-- ✅ The fixed portion of the algorithm cannot be skipped or reordered by mistake.
-- ✅ Variable steps are clearly documented (name, signature, contract).
-- ✅ When a step is genuinely optional, the template handles its absence gracefully.
-- ❌ Subclasses override the *fixed* part of the template, breaking the structure.
+- Good: The fixed portion of the algorithm cannot be skipped or reordered by mistake.
+- Good: Variable steps are clearly documented (name, signature, contract).
+- Good: When a step is genuinely optional, the template handles its absence gracefully.
+- Bad: Subclasses override the *fixed* part of the template, breaking the structure.
   Make those parts truly fixed (final, not overridable).
-- ❌ The template has accumulated optional knobs to the point that no two callers
+- Bad: The template has accumulated optional knobs to the point that no two callers
   use the same flow. Split into multiple templates.
-- ❌ A function with callable args was simpler; the class hierarchy is over-engineered.
+- Bad: A function with callable args was simpler; the class hierarchy is over-engineered.

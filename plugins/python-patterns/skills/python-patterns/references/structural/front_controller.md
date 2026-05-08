@@ -74,8 +74,8 @@ auth/logging/error-handling:
 
 ## Review checklist
 
-- ✅ Cross-cutting concerns live in one place; handlers focus on business logic.
-- ✅ Dispatch is data-driven (table) where possible, not `if/elif` chains.
-- ❌ The front controller has accumulated business logic that belongs in handlers.
-- ❌ Handlers also do auth/logging — the cross-cutting concerns are duplicated.
-- ❌ The framework already provides this. Delete the custom layer.
+- Good: Cross-cutting concerns live in one place; handlers focus on business logic.
+- Good: Dispatch is data-driven (table) where possible, not `if/elif` chains.
+- Bad: The front controller has accumulated business logic that belongs in handlers.
+- Bad: Handlers also do auth/logging — the cross-cutting concerns are duplicated.
+- Bad: The framework already provides this. Delete the custom layer.

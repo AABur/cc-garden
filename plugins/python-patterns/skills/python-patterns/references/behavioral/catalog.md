@@ -69,12 +69,12 @@ When a method body is one big `if param == "x": ... elif param == "y": ...`:
 
 ## Review checklist
 
-- ✅ Parameter is validated once; subsequent calls do not re-validate.
-- ✅ Each branch becomes one focused method, easy to read in isolation.
-- ✅ The catalog is documented (which params are valid? which method does each map to?).
-- ❌ The dispatch dict and the methods drift — params with no matching method, or
+- Good: Parameter is validated once; subsequent calls do not re-validate.
+- Good: Each branch becomes one focused method, easy to read in isolation.
+- Good: The catalog is documented (which params are valid? which method does each map to?).
+- Bad: The dispatch dict and the methods drift — params with no matching method, or
   methods not reachable from any param.
-- ❌ The "catalog" has only two entries and the `if/else` was already clear; this is
+- Bad: The "catalog" has only two entries and the `if/else` was already clear; this is
   ceremony.
-- ❌ The dict references unbound methods that need awkward `__get__` ceremony to call;
+- Bad: The dict references unbound methods that need awkward `__get__` ceremony to call;
   prefer staticmethods or module-level functions to keep call sites simple.

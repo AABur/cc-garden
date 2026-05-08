@@ -86,14 +86,14 @@ When you have repeated `Connection()` allocation in a hot loop:
 
 ## Review checklist
 
-- ✅ Acquire/release are paired via context manager (no leaks if an exception is
+- Good: Acquire/release are paired via context manager (no leaks if an exception is
   raised inside the block).
-- ✅ Pool size is bounded by config; growth and idle behaviour are documented.
-- ✅ Pooled objects expose a `reset()` (or are guaranteed stateless) before re-use.
-- ✅ Shutdown closes pooled objects.
-- ❌ The pool `Queue` blocks indefinitely on full — set a timeout and raise/log on
+- Good: Pool size is bounded by config; growth and idle behaviour are documented.
+- Good: Pooled objects expose a `reset()` (or are guaranteed stateless) before re-use.
+- Good: Shutdown closes pooled objects.
+- Bad: The pool `Queue` blocks indefinitely on full — set a timeout and raise/log on
   exhaustion.
-- ❌ The pool is rolled by hand when SQLAlchemy / urllib3 / library-X already provides
+- Bad: The pool is rolled by hand when SQLAlchemy / urllib3 / library-X already provides
   one. Replace.
-- ❌ Pooled objects retain mutable state from the previous user. Add a reset hook.
-- ❌ The pool is module-level *and* tests do not reset it. Add a fixture.
+- Bad: Pooled objects retain mutable state from the previous user. Add a reset hook.
+- Bad: The pool is module-level *and* tests do not reset it. Add a fixture.

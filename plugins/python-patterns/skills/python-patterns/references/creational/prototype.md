@@ -88,15 +88,15 @@ This is the modern Pythonic Prototype.
 
 ## Review checklist
 
-- ✅ Clones are *independent* — mutating one does not affect the prototype or other
+- Good: Clones are *independent* — mutating one does not affect the prototype or other
   clones (deep copy where needed).
-- ✅ The set of named prototypes is documented; their semantic differences are clear.
-- ✅ Where possible, dataclass + `replace()` or `copy.deepcopy` replaces hand-rolled
+- Good: The set of named prototypes is documented; their semantic differences are clear.
+- Good: Where possible, dataclass + `replace()` or `copy.deepcopy` replaces hand-rolled
   cloning.
-- ❌ `clone()` performs a shallow copy when nested mutable state would surprise the
+- Bad: `clone()` performs a shallow copy when nested mutable state would surprise the
   caller. Use `deepcopy`.
-- ❌ The dispatcher has accumulated dozens of near-identical prototypes — this is a
+- Bad: The dispatcher has accumulated dozens of near-identical prototypes — this is a
   smell that the variation should be parameter-driven, not prototype-driven.
-- ❌ Prototypes mutate over the program's lifetime; clones miss subsequent changes.
+- Bad: Prototypes mutate over the program's lifetime; clones miss subsequent changes.
   Make prototypes immutable (frozen dataclass, tuple) and rebuild the dispatcher when
   config changes.

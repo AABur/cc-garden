@@ -85,12 +85,12 @@ base classes required.
 
 ## Review checklist
 
-- ✅ The family of products genuinely varies together; switching one without the others
+- Good: The family of products genuinely varies together; switching one without the others
   would break invariants.
-- ✅ The choice of family is made in one place (boundary) and threaded through.
-- ❌ The "abstract factory" wraps a single class — that is just `Factory` (or just the
+- Good: The choice of family is made in one place (boundary) and threaded through.
+- Bad: The "abstract factory" wraps a single class — that is just `Factory` (or just the
   class itself).
-- ❌ The factory is a class hierarchy with one method that returns a class. In Python
+- Bad: The factory is a class hierarchy with one method that returns a class. In Python
   this is almost always over-engineered; pass the class directly.
-- ❌ Products from different "families" are mixed at runtime — the pattern's invariant
+- Bad: Products from different "families" are mixed at runtime — the pattern's invariant
   is broken; reach for `Factory` or `Strategy` instead.

@@ -73,13 +73,13 @@ When you need rollback on exception:
 
 ## Review checklist
 
-- ✅ The memento captures *all* state needed for restoration. Partial snapshots cause
+- Good: The memento captures *all* state needed for restoration. Partial snapshots cause
   bugs.
-- ✅ Deep vs shallow copy is chosen consciously based on aliasing risk.
-- ✅ The restore path is exercised by tests, not just the happy path.
-- ❌ The memento exposes the saved state to callers, breaking encapsulation —
+- Good: Deep vs shallow copy is chosen consciously based on aliasing risk.
+- Good: The restore path is exercised by tests, not just the happy path.
+- Bad: The memento exposes the saved state to callers, breaking encapsulation —
   externalize, but keep opaque.
-- ❌ The save/restore cost is unbounded; large objects with many checkpoints will
+- Bad: The save/restore cost is unbounded; large objects with many checkpoints will
   exhaust memory.
-- ❌ Mementos hold references to mutable parts that change after capture, silently
+- Bad: Mementos hold references to mutable parts that change after capture, silently
   invalidating the snapshot.

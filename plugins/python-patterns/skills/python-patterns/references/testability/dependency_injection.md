@@ -80,13 +80,13 @@ When code is hard to test because it instantiates its dependencies:
 
 ## Review checklist
 
-- ✅ Dependencies are explicit at construction; no magic global lookups inside
+- Good: Dependencies are explicit at construction; no magic global lookups inside
   methods.
-- ✅ The contract for each injected dependency is documented or expressed as a
+- Good: The contract for each injected dependency is documented or expressed as a
   `Protocol`.
-- ✅ Defaults are reasonable for production; tests do not mock everything.
-- ❌ A "DI framework" was introduced when constructor parameters would do. Remove.
-- ❌ Setter injection is used everywhere; many objects exist in half-initialized
+- Good: Defaults are reasonable for production; tests do not mock everything.
+- Bad: A "DI framework" was introduced when constructor parameters would do. Remove.
+- Bad: Setter injection is used everywhere; many objects exist in half-initialized
   state. Promote to constructor injection.
-- ❌ Tests rely on monkey-patching attributes the object instantiated for itself.
+- Bad: Tests rely on monkey-patching attributes the object instantiated for itself.
   That is brittle; restructure to inject.

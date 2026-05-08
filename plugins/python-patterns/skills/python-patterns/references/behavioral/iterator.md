@@ -58,14 +58,14 @@ When you have a `get_all()` that returns a list and the list is large:
 
 ## Review checklist
 
-- ✅ A generator beats a hand-rolled iterator class unless there is a specific reason
+- Good: A generator beats a hand-rolled iterator class unless there is a specific reason
   not to.
-- ✅ The iterator is exhausted exactly once; if multiple passes are needed, document
+- Good: The iterator is exhausted exactly once; if multiple passes are needed, document
   it (e.g., return a callable factory or a fresh iterator each time).
-- ✅ `__iter__` returns *self* (or a new iterator) consistently with the contract.
-- ❌ The hand-rolled iterator forgets to raise `StopIteration` on exhaustion. Use a
+- Good: `__iter__` returns *self* (or a new iterator) consistently with the contract.
+- Bad: The hand-rolled iterator forgets to raise `StopIteration` on exhaustion. Use a
   generator.
-- ❌ The iterator silently mutates the underlying container during iteration. Document
+- Bad: The iterator silently mutates the underlying container during iteration. Document
   or copy.
-- ❌ Iteration order is implementation-dependent (e.g., over a `dict` pre-3.7) but
+- Bad: Iteration order is implementation-dependent (e.g., over a `dict` pre-3.7) but
   callers assume otherwise.

@@ -70,9 +70,9 @@ When you see `ShapeAPI1`, `ShapeAPI2`, `ShapeAPI3` parallel hierarchies:
 
 ## Review checklist
 
-- ✅ The two hierarchies vary genuinely independently; the cross-product is real.
-- ✅ Implementations satisfy a single, documented Protocol/ABC.
-- ❌ Only one implementation exists and never plans to grow — Bridge is over-engineered;
+- Good: The two hierarchies vary genuinely independently; the cross-product is real.
+- Good: Implementations satisfy a single, documented Protocol/ABC.
+- Bad: Only one implementation exists and never plans to grow — Bridge is over-engineered;
   inject directly without naming the pattern.
-- ❌ The abstraction reaches into implementation specifics, breaking the boundary.
+- Bad: The abstraction reaches into implementation specifics, breaking the boundary.
   The Bridge is leaky; tighten the interface.
