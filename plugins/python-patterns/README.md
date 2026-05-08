@@ -1,14 +1,15 @@
 # python-patterns — Claude Code plugin
 
-[![Patterns](https://img.shields.io/badge/patterns-36-blue)](#pattern-catalog)
+[![Patterns](https://img.shields.io/badge/patterns-35-blue)](#pattern-catalog)
 [![Source](https://img.shields.io/badge/source-faif%2Fpython--patterns-success)](https://github.com/faif/python-patterns)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](#license)
 
 A Claude Code plugin that gives the agent on-demand expertise in classical Gang-of-Four
 and Python-specific design patterns, distilled from
-[faif/python-patterns](https://github.com/faif/python-patterns) (42k+ stars). Optimized for
-three real workflows: writing new code, refactoring existing code, and reviewing pull
-requests.
+[faif/python-patterns](https://github.com/faif/python-patterns) (42k+ stars). Covers 35
+patterns across creational, structural, behavioral, testability, fundamental, and
+non-GoF categories. Optimized for three real workflows: writing new code, refactoring
+existing code, and reviewing pull requests.
 
 > **Pythonic first.** The plugin biases toward plain Python — first-class functions,
 > `dataclass`, generators, modules-as-singletons, `@decorator` syntax — and only suggests
@@ -74,10 +75,10 @@ abstract_factory · borg · builder · factory · lazy_evaluation · pool · pro
 3-tier · adapter · bridge · composite · decorator · facade · flyweight · front_controller
 · mvc · proxy
 
-### Behavioral (17)
-chain_of_responsibility · catalog · chaining_method · command · interpreter · iterator ·
-mediator · memento · observer · publish_subscribe · registry · servant · specification ·
-state · strategy · template · visitor
+### Behavioral (16)
+chain_of_responsibility · catalog · chaining_method · command · iterator · mediator ·
+memento · observer · publish_subscribe · registry · servant · specification · state ·
+strategy · template · visitor
 
 ### Testability
 dependency_injection

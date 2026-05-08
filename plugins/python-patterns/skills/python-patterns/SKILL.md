@@ -2,13 +2,13 @@
 name: python-patterns
 description: >-
   Apply Gang-of-Four and Python-specific design patterns to Python code with a
-  Pythonic-first bias. Catalog covers 36 patterns from faif/python-patterns:
+  Pythonic-first bias. Catalog covers 35 patterns from faif/python-patterns:
   Factory, Abstract Factory, Builder, Borg, Pool, Prototype, Lazy Evaluation,
   Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy, MVC, 3-tier,
   Front Controller, Observer, Strategy, Command, Chain of Responsibility, State,
   Template, Visitor, Iterator, Mediator, Memento, Publish-Subscribe, Registry,
-  Specification, Catalog, Chaining Method, Servant, Interpreter, Dependency
-  Injection, Delegation, Blackboard, Graph Search, Hierarchical State Machine.
+  Specification, Catalog, Chaining Method, Servant, Dependency Injection,
+  Delegation, Blackboard, Graph Search, Hierarchical State Machine.
 
   Use this skill whenever the user is writing or modifying Python code and
   either names a pattern explicitly ("make this a Factory", "use Strategy
@@ -134,7 +134,6 @@ Common phrasings the user might use → reference file to read.
 | "mediator between many tightly-coupled objects"                            | `behavioral/mediator.md`                                       |
 | "snapshot / restore previous state"                                        | `behavioral/memento.md`                                        |
 | "common helpers without inheritance"                                       | `behavioral/servant.md` or `fundamental/delegation_pattern.md` |
-| "interpret a small language / DSL"                                         | `behavioral/interpreter.md`                                    |
 | "wire dependencies for tests" / "swap real DB for fake"                    | `testability/dependency_injection.md`                          |
 | "shared blackboard solved by independent agents"                           | `other/blackboard.md`                                          |
 | "graph traversal / shortest path"                                          | `other/graph_search.md`                                        |
@@ -190,7 +189,6 @@ value, a Borg, composition, or dependency injection).
 | `chain_of_responsibility.md` | Pass a request along a handler chain until handled. |
 | `chaining_method.md` | Fluent API where each call returns `self`. |
 | `command.md` | Bundle a request as an object so it can be queued, undone, logged. |
-| `interpreter.md` | Evaluate sentences in a small language. |
 | `iterator.md` | Sequential access to a container's elements. |
 | `mediator.md` | Centralize complex peer-to-peer communication. |
 | `memento.md` | Capture and restore an object's internal state. |
