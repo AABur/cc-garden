@@ -1,0 +1,8 @@
+{
+  "name": "python-patterns",
+  "description": "Apply Gang-of-Four and Python-specific design patterns to Python code with a Pythonic-first bias. Catalog covers 36 patterns from faif/python-patterns plus anti-pattern guidance for Singleton, God Object, and inheritance overuse. Use for pattern selection in new code, refactoring naive code into patterns, and code review.",
+  "author": {
+    "name": "Alexander Burchenko",
+    "email": "aabur@mail.ru"
+  }
+}
