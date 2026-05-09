@@ -27,7 +27,7 @@
   {
     "query": "I want CLAUDE.md rules for this project but generated from the actual failure patterns we hit in our sessions, not generic best practices. read the conversation history and propose 3-5 rules tied to specific things we got wrong",
     "should_trigger": true,
-    "note": "F-section use case — rules from past failures, must distinguish from claude-md-improver"
+    "note": "Process Rules use case — rules from past failures, must distinguish from claude-md-improver"
   },
   {
     "query": "do project archaeology on this repo and write me a markdown report — abandoned ideas, decisions and the reasoning behind them, topic clusters by week. focus on what was discussed, not what's in git",
@@ -42,12 +42,32 @@
   {
     "query": "i need a write-up of every decision we agreed on with claude code in this repo, including the alternatives we considered and rejected. cite the specific session messages",
     "should_trigger": true,
-    "note": "decision timeline + citations — section A behavior"
+    "note": "decision timeline + citations — appendix section A behavior"
   },
   {
     "query": "give me a retrospective of the kardscm project: how did the architecture evolve through our conversations, where did we change direction, what assumptions did we make early on that we walked back later?",
     "should_trigger": true,
-    "note": "intent-vs-state (section D) use case"
+    "note": "intent-vs-state (appendix section D) use case"
+  },
+  {
+    "query": "give me a quick read on this project — what's actually working, what's not, and what's the single most important thing I should decide next. don't give me a forensic timeline, just the bottom line",
+    "should_trigger": true,
+    "note": "regression case — user explicitly opts out of forensic timeline; must produce reader-first retro, not a decision archive"
+  },
+  {
+    "query": "что у меня в этом проекте висит в воздухе? какие штуки начали и не закончили, на чём застряли. хочу список незакрытых хвостов из истории моих сессий с агентом",
+    "should_trigger": true,
+    "note": "open loops / unresolved threads — Open Loops body section"
+  },
+  {
+    "query": "from my claude code conversations on this repo — what worked well, what kept failing, and what should I do next. focus on practices and next steps, not just events",
+    "should_trigger": true,
+    "note": "core question of the new product: what worked / what failed / what next"
+  },
+  {
+    "query": "разбери мою работу с claude по этому проекту: какие следующие шаги мне реально стоит сделать прямо сейчас и почему — обоснуй каждый шаг через то что было в наших обсуждениях",
+    "should_trigger": true,
+    "note": "next-actions-focused query in russian — Recommended Next Actions section"
   },
 
   {
@@ -99,5 +119,10 @@
     "query": "let's brainstorm the architecture for a new background worker service — should it be celery, rq, dramatiq, or something async-native? walk me through tradeoffs",
     "should_trigger": false,
     "note": "brainstorming skill, not retrospective"
+  },
+  {
+    "query": "we had a production incident yesterday — about 40 minutes of 5xx errors on the api. write me a postmortem with timeline, root cause analysis, and action items based on the slack thread and grafana logs",
+    "should_trigger": false,
+    "note": "incident postmortem — different domain (production incident based on logs/external sources, not project retrospective from claude code session history)"
   }
 ]
