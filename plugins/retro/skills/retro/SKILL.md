@@ -1,22 +1,27 @@
 ---
 name: retro
 description: >-
-  Reconstruct a project's decision history from local Claude Code session
-  JSONLs and write the retrospective to a Markdown file in the project
-  (`.retro/<YYYY-MM-DD>-retro.md`).
+  Produce a human-readable project retrospective from the local Claude
+  Code session JSONLs of the current repository, written to
+  `.retro/<YYYY-MM-DD>-retro.md`. Synthesizes what happened, what
+  worked, what did not, what is unresolved, and recommended next
+  actions, followed by a detailed evidence appendix (decision timeline,
+  abandoned approaches, topic map, intent vs state).
 
-  Use when the user asks for a retrospective, project archaeology, decision
-  history, abandoned approaches, or thrashing/loops analysis — based on
-  conversation history with the agent in the current repository, not on
-  git log or training-data knowledge.
+  Use when the user wants to look back at a project through their
+  conversation history with Claude Code in the current repository — what
+  happened, what worked, what failed or stalled, what is unresolved,
+  what to do next — not based on git log or training-data knowledge.
 
-  Trigger on: "/retro", "retrospective", "decision history", "project
-  archaeology", "what did we abandon", "why did we choose X over Y",
-  "why did we pick X", "when did we pivot", "what assumptions did we walk
-  back", "show me the loops we hit", "what got dropped/scrapped". Also
-  trigger when the user wants CLAUDE.md rules GENERATED FROM ACTUAL FAILURE
-  PATTERNS in their session history — that is `/retro`'s section F output,
-  not the generic claude-md-improver skill.
+  Trigger on: "/retro", "retrospective", "project retrospective", "what
+  worked, what failed, what should I do next", "what's left open",
+  "what's still unresolved", "decision history", "project archaeology",
+  "what did we abandon", "why did we choose X over Y", "why did we pick
+  X", "when did we pivot", "what assumptions did we walk back", "show me
+  the loops we hit", "what got dropped/scrapped". Also trigger when the
+  user wants CLAUDE.md rules generated from concrete failure patterns in
+  their session history — the retro report's optional Process Rules
+  section, not the generic claude-md-improver skill.
 
   Skip when: the question is about git log / commits (use git directly),
   about team sprint retros (different domain), or about updating an
