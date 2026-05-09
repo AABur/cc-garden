@@ -11,6 +11,7 @@ retro-skill-review*.md
 
 # Eval run artifacts (logs, intermediate JSON)
 plugins/retro/eval/runs/
+plugins/python-patterns/skills/python-patterns-workspace/
 
 # Python bytecode
 __pycache__/
