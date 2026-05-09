@@ -1,42 +1,30 @@
 ---
 name: python-patterns
 description: >-
-  Apply Gang-of-Four and Python-specific design patterns to Python code with a
-  Pythonic-first bias. Catalog covers 35 patterns from faif/python-patterns:
-  Factory, Abstract Factory, Builder, Borg, Pool, Prototype, Lazy Evaluation,
-  Adapter, Bridge, Composite, Decorator, Facade, Flyweight, Proxy, MVC, 3-tier,
-  Front Controller, Observer, Strategy, Command, Chain of Responsibility, State,
-  Template, Visitor, Iterator, Mediator, Memento, Publish-Subscribe, Registry,
-  Specification, Catalog, Chaining Method, Servant, Dependency Injection,
-  Delegation, Blackboard, Graph Search, Hierarchical State Machine.
+  Use this skill for Python design problems where a GoF or Python-specific
+  design pattern is the right tool — picking the pattern, refactoring naive
+  code into it, or reviewing existing code for pattern misuse.
 
-  Use this skill whenever the user is writing or modifying Python code and
-  either names a pattern explicitly ("make this a Factory", "use Strategy
-  here", "refactor with Observer", "I need a Singleton", "GoF") or describes
-  a design problem the pattern catalog solves: multiple variants of an
-  algorithm, complex object construction with many parameters, decoupling
-  a complex subsystem behind a simple API, event notification across
-  subscribers, undoable / queueable actions, stateful workflows, traversing
-  heterogeneous structures, treating part-whole hierarchies uniformly,
-  adapting incompatible interfaces, controlling access to a resource,
-  pluggable algorithms, cross-cutting concerns wrapping behaviour. Make sure
-  to invoke this skill even when the user does not say "design pattern" — phrases
-  like "this class is huge", "tons of nested ifs", "object with way too many
-  parameters", "I want subscribers to react to X", "every subclass copies the
-  same logic", or "this isinstance chain is ugly" all map to specific
-  patterns and should trigger the skill.
+  Trigger when the user (a) names a pattern by name on Python code: Factory,
+  Strategy, Observer, Builder, Singleton, Adapter, Decorator, Proxy, Visitor,
+  Command, Chain of Responsibility, State, Template Method, Memento, Iterator,
+  Mediator, Composite, Bridge, Facade, Flyweight, Abstract Factory, Borg,
+  Prototype, Pool, Publish-Subscribe, Registry, Specification, Dependency
+  Injection, MVC, "GoF"; (b) describes a Python design symptom that maps to
+  one — long isinstance / elif dispatch chains, an object with many optional
+  constructor fields, undo / redo, stateful workflows, event hooks for
+  subscribers, every subclass copying the same skeleton with one tweak,
+  parallel class hierarchies, wrapping a service to add logging or auth,
+  "this class is huge", "this looks over-engineered", "is this Pythonic?";
+  (c) asks for a Python design / code review or refactor of OOP code.
 
-  Also trigger this skill when the user is about to introduce a Singleton,
-  God Object, or deep inheritance hierarchy in Python — the skill flags these
-  as anti-patterns and proposes the Pythonic alternative (module globals,
-  Borg, composition, delegation). Trigger on review prompts where the user
-  asks "is this Pythonic?", "is this over-engineered?", "is this the right
-  abstraction?", or "code review please" on Python source.
+  Also trigger when the user is about to introduce a Singleton, God Object,
+  or deep inheritance hierarchy in Python — flag the anti-pattern and propose
+  the Pythonic alternative (module globals, Borg, composition, delegation).
 
-  Skip when: the task is framework-specific routing or ORM (Django views,
-  FastAPI dependencies, SQLAlchemy session lifecycle), pure data analysis
-  with pandas / numpy / polars, simple one-shot scripts, or non-OOP
-  functional code where pattern advice would be noise.
+  Skip: pandas / numpy data analysis, framework-specific routing or ORM
+  (Django views, FastAPI dependencies, SQLAlchemy sessions), one-shot scripts,
+  non-OOP functional code, library version / config / install questions.
 ---
 
 # python-patterns — pattern selection, refactoring, and review for Python

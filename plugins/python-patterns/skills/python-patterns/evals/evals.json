@@ -1,0 +1,106 @@
+[
+  {
+    "query": "Refactor this Python class — it has a 200-line method full of `if isinstance(x, ...)` chains for different shape types.",
+    "should_trigger": true
+  },
+  {
+    "query": "Make this database connection a Singleton in Python so we share one instance across the app.",
+    "should_trigger": true
+  },
+  {
+    "query": "I have eight nested if/elif branches in Python that dispatch on a request type field. How would you clean this up?",
+    "should_trigger": true
+  },
+  {
+    "query": "Design review on this Python module — does the abstraction look right or is it over-engineered?",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to add an event hook so subscribers can react when a user signs up. What's a good pattern in Python?",
+    "should_trigger": true
+  },
+  {
+    "query": "Constructing a Pizza object with twelve optional fields is getting unwieldy in Python. What pattern fits?",
+    "should_trigger": true
+  },
+  {
+    "query": "Use the Strategy pattern here for the three sort algorithms.",
+    "should_trigger": true
+  },
+  {
+    "query": "Refactor this Python code with the Observer pattern.",
+    "should_trigger": true
+  },
+  {
+    "query": "Code review on payment_processor.py — flag any GoF anti-patterns.",
+    "should_trigger": true
+  },
+  {
+    "query": "This Python class has grown to 40 methods and tracks five different responsibilities. What's the right way to split it?",
+    "should_trigger": true
+  },
+  {
+    "query": "I need an undo/redo feature in my Python text editor. How should I structure it?",
+    "should_trigger": true
+  },
+  {
+    "query": "Every Animal subclass in Python copies the same skeleton method and only overrides one step. Is there a cleaner shape?",
+    "should_trigger": true
+  },
+  {
+    "query": "I want to wrap this Python service to add logging and authentication without changing the original class.",
+    "should_trigger": true
+  },
+  {
+    "query": "Is this Pythonic? class ConfigSingleton with __new__ override.",
+    "should_trigger": true
+  },
+  {
+    "query": "Compute the rolling mean of a pandas DataFrame column over a 30-day window.",
+    "should_trigger": false
+  },
+  {
+    "query": "Why is my numpy array slower than a list comprehension here?",
+    "should_trigger": false
+  },
+  {
+    "query": "Add a FastAPI dependency that injects the current user from a JWT.",
+    "should_trigger": false
+  },
+  {
+    "query": "Write a Django ORM query to get all orders from the last 24 hours grouped by user.",
+    "should_trigger": false
+  },
+  {
+    "query": "Generate a one-shot Python script that downloads the latest tarball and unpacks it to /tmp.",
+    "should_trigger": false
+  },
+  {
+    "query": "Translate this bash pipeline to Python using subprocess.",
+    "should_trigger": false
+  },
+  {
+    "query": "How do I configure pytest fixtures with module scope?",
+    "should_trigger": false
+  },
+  {
+    "query": "What's the difference between asyncio.gather and asyncio.wait?",
+    "should_trigger": false
+  },
+  {
+    "query": "Center a div with flexbox.",
+    "should_trigger": false
+  },
+  {
+    "query": "Plot a histogram of column 'price' with matplotlib.",
+    "should_trigger": false
+  },
+  {
+    "query": "What CSS selector picks the first child of a list?",
+    "should_trigger": false
+  },
+  {
+    "query": "How do I install Python 3.12 with pyenv on macOS?",
+    "should_trigger": false
+  }
+]
