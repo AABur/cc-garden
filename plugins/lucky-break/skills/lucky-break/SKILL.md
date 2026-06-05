@@ -72,7 +72,7 @@ The "gray straight path" is whatever the user does on autopilot — even if it's
 - Topics where the user is expert (low learning rate = low luck surface area)
 - The ratio of creating content ABOUT ideas vs. exploring ideas for their own sake
 
-### Step 4: Generate the Coin Flip
+### Step 4: Generate the Luck Break
 
 Suggest ONE specific, actionable thing to do THIS WEEK that:
 - Is a genuine deviation from the identified routine
@@ -87,7 +87,7 @@ Suggest ONE specific, actionable thing to do THIS WEEK that:
 ### Output Format
 
 ```
-🪙 Your coin flip this week:
+🪙 Your luck break this week:
 
 [One sentence: what to do]
 
