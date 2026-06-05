@@ -1,0 +1,8 @@
+{
+  "name": "lucky-break",
+  "description": "Analyze your last 7 days of Claude Code conversations and suggest one pattern-breaking, luck-maximizing thing to do — a weekly luck-break ritual grounded in the neuroscience of luck.",
+  "author": {
+    "name": "Alexander Burchenko",
+    "email": "aabur@mail.ru"
+  }
+}
