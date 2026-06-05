@@ -15,7 +15,7 @@ description: >-
 
   Skip when: the request is not to reflect on the week / break a routine; or
   when the user wants a git-log summary or a /retro decision-history report.
-allowed-tools: Bash(python3 ${CLAUDE_PLUGIN_ROOT}/scripts/gather.py *) Read Grep
+allowed-tools: Bash(python3 ${CLAUDE_SKILL_DIR}/scripts/gather.py *) Read Grep
 disallowed-tools: Edit Write
 ---
 
@@ -42,8 +42,14 @@ Five mechanisms from behavioral neuroscience (Nobuko Nakano, "Lucky People", Gal
 Run the bundled gatherer ONCE to collect the last 7 days of sessions across all projects:
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cc-garden/plugins/lucky-break}/scripts/gather.py"
+python3 "${CLAUDE_SKILL_DIR}/scripts/gather.py"
 ```
+
+`${CLAUDE_SKILL_DIR}` resolves to this skill's own directory, so the path is correct
+at any install level. If — and only if — that command fails with "No such file or
+directory" (the variable did not expand), locate the bundled script instead with
+`find ~/.claude -path '*lucky-break*/scripts/gather.py' | head -1` and run that path.
+Pass `--days N` / `--max-per-file N` to override the defaults (7 / 200).
 
 Then parse the returned JSON. Each project entry has `path`, `user_msg_count`, `first_seen`, `last_seen`, and `samples` (representative first-half + last-half of the user's messages). Use the `samples` and counts as the input to the next steps — this is your condensed inventory of WHAT the user worked on, WHAT decisions they made, and WHAT topics they explored or avoided. Do NOT re-read the raw `.jsonl` files unless a specific thread needs deeper forensic context.
 
