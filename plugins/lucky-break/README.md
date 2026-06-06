@@ -4,9 +4,9 @@
 [![Forked from](https://img.shields.io/badge/forked%20from-coin--flip-success)](https://github.com/BayramAnnakov/coin-flip-skill)
 [![Ritual](https://img.shields.io/badge/ritual-weekly-blue)](#how-it-triggers)
 
-A Claude Code plugin that analyzes your last 7 days of conversations and suggests
-**one** actionable, pattern-breaking thing to do — grounded in the neuroscience of
-luck. Best run as a Sunday-evening ritual.
+A Claude Code plugin that analyzes your last 7 days of conversations — across both
+**Claude Code** and **Codex CLI** — and suggests **one** actionable, pattern-breaking
+thing to do, grounded in the neuroscience of luck. Best run as a Sunday-evening ritual.
 
 ---
 
@@ -41,7 +41,10 @@ tool, not a coding assistant.
 
 ## What it does
 
-1. Scans your conversation transcripts from the last 7 days across all projects.
+1. Scans your conversation transcripts from the last 7 days across all projects, in
+   both Claude Code (`~/.claude/projects`) and Codex CLI (`~/.codex/sessions`). Each
+   project is tagged with its `source`, so the same repo worked on through both CLIs
+   is read together. (Reading Codex logs needs only the files — not a running Codex.)
 2. Extracts your messages to map topics, cognitive mode (exploit vs. explore), and
    excitement signals.
 3. Identifies your "gray straight path" — what you do on autopilot, even when it is
@@ -69,9 +72,9 @@ be installed. Nobuko Nakano identifies five mechanisms:
 5. **Persistence** — game theory simulations show outcomes overwhelmingly favor those
    who stay in the game.
 
-This plugin reads your recent Claude Code sessions, identifies your "gray straight
-path" (the routine you're on autopilot with, even if it's productive), finds buried
-fascination signals, and suggests one concrete pattern-break for the week.
+This plugin reads your recent Claude Code and Codex CLI sessions, identifies your "gray
+straight path" (the routine you're on autopilot with, even if it's productive), finds
+buried fascination signals, and suggests one concrete pattern-break for the week.
 
 ---
 
