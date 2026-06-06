@@ -262,7 +262,11 @@ def gather_codex(root: Path, days: int = 7, max_per_file: int = 200) -> list[dic
         if is_subagent or not samples:
             continue
 
-        key = cwd if cwd else str(f.parent)
+        # Group by working directory. When cwd is absent fall back to the
+        # session file path (one rollout == one session) — NOT f.parent, which
+        # is the shared YYYY/MM/DD date bucket and would wrongly merge distinct
+        # same-day sessions into one entry.
+        key = cwd if cwd else str(f)
         seen = _iso(mtime)
         _merge_entry(
             projects,

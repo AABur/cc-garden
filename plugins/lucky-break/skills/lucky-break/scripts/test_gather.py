@@ -414,6 +414,40 @@ def test_codex_sampling_cap_honored() -> None:
     assert entry["samples"][-1] == "cx-99", entry["samples"][-1]
 
 
+def test_codex_unknown_cwd_kept_distinct() -> None:
+    with tempfile.TemporaryDirectory() as td:
+        day = Path(td) / "sessions" / "2026" / "06" / "06"
+        day.mkdir(parents=True)
+        # Two sessions in the SAME day directory, both WITHOUT a cwd.
+        _write_jsonl(
+            day / "rollout-2026-06-06T10-00-00-nocwd1.jsonl",
+            [
+                {"type": "session_meta", "payload": {"thread_source": "interactive"}},
+                {
+                    "type": "event_msg",
+                    "payload": {"type": "user_message", "message": "session one prompt"},
+                },
+            ],
+        )
+        _write_jsonl(
+            day / "rollout-2026-06-06T11-00-00-nocwd2.jsonl",
+            [
+                {"type": "session_meta", "payload": {"thread_source": "interactive"}},
+                {
+                    "type": "event_msg",
+                    "payload": {"type": "user_message", "message": "session two prompt"},
+                },
+            ],
+        )
+        entries = gather_codex(Path(td) / "sessions", days=7)
+
+    # They must NOT merge under the shared date directory.
+    assert len(entries) == 2, f"unknown-cwd sessions must stay distinct, got {len(entries)}"
+    assert len({e["path"] for e in entries}) == 2, [e["path"] for e in entries]
+    blob = "\n".join(s for e in entries for s in e["samples"])
+    assert "session one prompt" in blob and "session two prompt" in blob, blob
+
+
 def test_codex_missing_root_is_empty() -> None:
     with tempfile.TemporaryDirectory() as td:
         entries = gather_codex(Path(td) / "does-not-exist", days=7)
@@ -450,6 +484,7 @@ def _run_all() -> int:
         test_codex_secrets_redacted,
         test_codex_old_session_excluded,
         test_codex_sampling_cap_honored,
+        test_codex_unknown_cwd_kept_distinct,
         test_codex_missing_root_is_empty,
         test_gather_all_tags_both_sources,
     ]
