@@ -1,13 +1,13 @@
 ---
 name: lucky-break
 description: >-
-  Analyze your last 7 days of Claude Code conversations and suggest ONE
-  pattern-breaking, luck-maximizing thing to do this week, grounded in the
-  neuroscience of luck.
+  Analyze your last 7 days of Claude Code and Codex CLI conversations and
+  suggest ONE pattern-breaking, luck-maximizing thing to do this week, grounded
+  in the neuroscience of luck.
 
-  Use when the user wants to reflect on their recent week with Claude Code and
-  get a single concrete action that breaks their routine and widens their luck
-  surface area.
+  Use when the user wants to reflect on their recent week across Claude Code and
+  Codex CLI and get a single concrete action that breaks their routine and
+  widens their luck surface area.
 
   Trigger on: "/lucky-break", "lucky break", "coin flip", "weekly luck break",
   "break my pattern", "what should I do differently this week", "analyze my
@@ -23,7 +23,7 @@ disallowed-tools: Edit Write
 
 > Based on the original *coin-flip* skill by Bayram Annakov — https://github.com/BayramAnnakov/coin-flip-skill
 
-Analyze the user's conversations with Claude Code over the last 7 days and suggest ONE actionable, pattern-breaking thing to do — based on the neuroscience of luck.
+Analyze the user's conversations with Claude Code and Codex CLI over the last 7 days and suggest ONE actionable, pattern-breaking thing to do — based on the neuroscience of luck.
 
 ## The Luck Framework
 
@@ -39,7 +39,8 @@ Five mechanisms from behavioral neuroscience (Nobuko Nakano, "Lucky People", Gal
 
 ### Step 1: Gather Recent Sessions
 
-Run the bundled gatherer ONCE to collect the last 7 days of sessions across all projects:
+Run the bundled gatherer ONCE to collect the last 7 days of sessions across all
+projects from BOTH Claude Code (`~/.claude/projects`) and Codex CLI (`~/.codex/sessions`):
 
 ```bash
 python3 "${CLAUDE_SKILL_DIR}/scripts/gather.py"
@@ -49,9 +50,12 @@ python3 "${CLAUDE_SKILL_DIR}/scripts/gather.py"
 at any install level. If — and only if — that command fails with "No such file or
 directory" (the variable did not expand), locate the bundled script instead with
 `find ~/.claude -path '*lucky-break*/scripts/gather.py' | head -1` and run that path.
-Pass `--days N` / `--max-per-file N` to override the defaults (7 / 200).
+Pass `--days N` / `--max-per-file N` to override the defaults (7 / 200), or
+`--source claude|codex|both` to restrict the sources (default `both`). The
+gatherer reads Codex logs as plain files — the Codex CLI itself does not need to
+be running.
 
-Then parse the returned JSON. Each project entry has `path`, `user_msg_count`, `first_seen`, `last_seen`, and `samples` (representative first-half + last-half of the user's messages). Use the `samples` and counts as the input to the next steps — this is your condensed inventory of WHAT the user worked on, WHAT decisions they made, and WHAT topics they explored or avoided. Do NOT re-read the raw `.jsonl` files unless a specific thread needs deeper forensic context.
+Then parse the returned JSON. Each project entry has `source` (`claude` or `codex`), `path`, `user_msg_count`, `first_seen`, `last_seen`, and `samples` (representative first-half + last-half of the user's messages). The same repository worked on through both CLIs appears as two entries (one per `source`) — treat them together when reasoning about that project. Use the `samples` and counts as the input to the next steps — this is your condensed inventory of WHAT the user worked on, WHAT decisions they made, and WHAT topics they explored or avoided. Do NOT re-read the raw session files unless a specific thread needs deeper forensic context.
 
 ### Step 2: Pattern Analysis
 
