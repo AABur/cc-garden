@@ -42,7 +42,7 @@ audit still runs without it using token counts only.
 
 ## Privacy
 
-All analysis is local. Only sizes, counts, and names are read — never payloads.
+All analysis is local. Payload content is inspected to extract names and sizes but is never persisted or emitted.
 The only network call is the optional `ccusage` baseline.
 
 ## Credits

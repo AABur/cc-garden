@@ -10,10 +10,11 @@ from dataclasses import dataclass
 
 # family -> per-million rates + cacheable minimum (tokens)
 PRICING = {
-    "opus":   {"input": 5.0,  "output": 25.0, "cw5m": 6.25,  "cw1h": 10.0, "cr": 0.5, "min": 4096},
-    "sonnet": {"input": 3.0,  "output": 15.0, "cw5m": 3.75,  "cw1h": 6.0,  "cr": 0.3, "min": 2048},
-    "haiku":  {"input": 1.0,  "output": 5.0,  "cw5m": 1.25,  "cw1h": 2.0,  "cr": 0.1, "min": 4096},
-    "fable":  {"input": 10.0, "output": 50.0, "cw5m": 12.5,  "cw1h": 20.0, "cr": 1.0, "min": 2048},
+    "opus":     {"input": 5.0,  "output": 25.0, "cw5m": 6.25,  "cw1h": 10.0, "cr": 0.5, "min": 4096},
+    "sonnet":   {"input": 3.0,  "output": 15.0, "cw5m": 3.75,  "cw1h": 6.0,  "cr": 0.3, "min": 2048},
+    "sonnet45": {"input": 3.0,  "output": 15.0, "cw5m": 3.75,  "cw1h": 6.0,  "cr": 0.3, "min": 1024},
+    "haiku":    {"input": 1.0,  "output": 5.0,  "cw5m": 1.25,  "cw1h": 2.0,  "cr": 0.1, "min": 4096},
+    "fable":    {"input": 10.0, "output": 50.0, "cw5m": 12.5,  "cw1h": 20.0, "cr": 1.0, "min": 2048},
 }
 SNAPSHOT_DATE = "2026-06-04"
 
@@ -42,6 +43,8 @@ def resolve_family(model: str | None) -> str | None:
         return "synthetic"
     if m.startswith("claude-opus-4"):
         return "opus"
+    if m.startswith("claude-sonnet-4-5"):
+        return "sonnet45"
     if m.startswith("claude-sonnet-4"):
         return "sonnet"
     if m.startswith("claude-haiku-4"):

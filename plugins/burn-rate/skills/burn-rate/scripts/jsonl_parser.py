@@ -1,6 +1,7 @@
 # jsonl_parser.py
 """Parse ~/.claude/projects/**/*.jsonl into deduped, attribution-aware sessions.
-All analysis is local; only sizes/counts/names are retained -- never payloads."""
+All analysis is local; payload content is inspected to extract names/sizes but is
+never persisted or emitted."""
 from __future__ import annotations
 import json
 from dataclasses import dataclass, field
@@ -160,7 +161,7 @@ def parse_session_file(path: Path, since: Optional[datetime]) -> Session:
                 continue
             if since is not None:
                 ts = _ts(raw.get("timestamp"))
-                if ts and ts < since:
+                if not ts or ts < since:
                     continue
             records.append(raw)
     sess = build_session_from_records(path.stem, records)

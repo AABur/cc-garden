@@ -41,6 +41,11 @@ class TestPricing(unittest.TestCase):
     def test_cacheable_minimum(self):
         self.assertEqual(pricing.cacheable_minimum("claude-opus-4-8"), 4096)
         self.assertEqual(pricing.cacheable_minimum("claude-sonnet-4-6"), 2048)
+        self.assertEqual(pricing.cacheable_minimum("claude-sonnet-4-5-20250101"), 1024)
+
+    def test_sonnet45_resolves_separately(self):
+        self.assertEqual(pricing.resolve_family("claude-sonnet-4-5-20250101"), "sonnet45")
+        self.assertEqual(pricing.resolve_family("claude-sonnet-4-6"), "sonnet")
 
 
 if __name__ == "__main__":

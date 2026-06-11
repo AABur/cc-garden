@@ -110,8 +110,8 @@ plugins/burn-rate/
   hook events, file reads, and attribution fields (`attributionSkill`,
   `attributionPlugin`, `attributionMcpServer`, `attributionMcpTool`,
   `attributionAgent`, `agentId`, `sessionKind`, `isSidechain`, `gitBranch`,
-  `apiErrorStatus`, `isApiErrorMessage`). Privacy: sizes/counts/names only, no
-  payloads; Bash commands reduced to first token.
+  `apiErrorStatus`, `isApiErrorMessage`). Privacy: payload content is inspected
+  to extract names/sizes but is never persisted or emitted; Bash commands reduced to first token.
 - **`ccusage`** — runs `ccusage daily --since --until --json` (online `auto`
   mode for fresh prices + dedup). On missing Node/ccusage or failure: returns
   `None` + error string; audit proceeds and the report notes the absence.
