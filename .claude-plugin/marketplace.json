@@ -51,6 +51,15 @@
         "email": "aabur@mail.ru"
       },
       "source": "./plugins/lucky-break"
+    },
+    {
+      "name": "burn-rate",
+      "description": "Audit Claude Code token spend, read-only, and rank where tokens are leaking. Deduplicated transcript analysis with skill/plugin/MCP/agent attribution, current 2026 pricing, and concrete fixes — no config is ever modified.",
+      "author": {
+        "name": "Alexander Burchenko",
+        "email": "aabur@mail.ru"
+      },
+      "source": "./plugins/burn-rate"
     }
   ]
 }
