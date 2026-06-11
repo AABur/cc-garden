@@ -1,5 +1,11 @@
 # test_claude_md_bloat.py
+import sys
 import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+
 from jsonl_parser import Session
 import pricing
 from detectors import claude_md_bloat as cmb

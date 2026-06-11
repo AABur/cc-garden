@@ -1,5 +1,11 @@
 # test_context_rot.py
+import sys
 import unittest
+from pathlib import Path
+
+HERE = Path(__file__).resolve().parent
+sys.path.insert(0, str(HERE))
+
 from jsonl_parser import Turn, Usage, Session
 import pricing
 from detectors import context_rot

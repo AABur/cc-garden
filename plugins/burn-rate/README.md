@@ -5,8 +5,8 @@
 
 Read-only audit of Claude Code token spend: deduplicated transcript analysis,
 skill/plugin/MCP/agent attribution, current 2026 pricing, a `ccusage` baseline,
-and ranked leaks with concrete fixes. **No configuration is ever modified and
-nothing is written to disk.**
+and ranked leaks with concrete fixes. **No configuration is ever modified and burn-rate writes no output files.**
+(The optional `ccusage` baseline is fetched via `npx` and may create npm cache entries.)
 
 ## Why
 

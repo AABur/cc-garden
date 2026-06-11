@@ -4,7 +4,7 @@ description: >-
   Audit Claude Code token spend, read-only, and rank where tokens are leaking.
   Deduplicated transcript analysis with skill/plugin/MCP/agent attribution,
   current 2026 pricing, ccusage baseline, and concrete fixes — no config is ever
-  modified and nothing is written to disk.
+  modified and burn-rate writes no output files.
 
   Use when the user asks to audit token usage, find token leaks, understand why
   they are hitting weekly limits, or optimize Claude Code spend.
@@ -25,9 +25,9 @@ disallowed-tools: Edit Write
 > implementation.
 
 Find where Claude Code tokens are leaking — and what to fix first. Read-only:
-no settings, CLAUDE.md, hooks, or skills are modified, and nothing is written to
-disk. All analysis is local; the only network call is the optional `ccusage`
-baseline.
+no settings, CLAUDE.md, hooks, or skills are modified, and burn-rate writes no
+output files. All analysis is local; the only network call is the optional
+`ccusage` baseline (which may create npm cache entries).
 
 ## Workflow
 
@@ -72,5 +72,5 @@ Sections:
 ## What it does NOT do
 
 - Never edits settings.json, CLAUDE.md, hooks, or skills.
-- Never writes the report or any file to disk — chat output only.
-- No network calls except the optional `ccusage` baseline.
+- Never writes the report or any output file — chat output only.
+- No network calls except the optional `ccusage` baseline (may write npm cache).

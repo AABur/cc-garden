@@ -3,7 +3,7 @@
 
 Runs ccusage for the spend baseline, parses deduped transcripts, inventories config,
 computes attribution Pareto, and runs the leak detectors. The SKILL.md body narrates
-the JSON in the user's language. Nothing is written; no network except ccusage.
+the JSON in the user's language. burn-rate itself writes nothing; the optional ccusage call may create npm cache entries.
 """
 from __future__ import annotations
 import argparse
