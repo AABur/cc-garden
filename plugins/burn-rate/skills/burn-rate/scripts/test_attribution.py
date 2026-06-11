@@ -30,6 +30,15 @@ class TestAttribution(unittest.TestCase):
         self.assertEqual(res["bg"], 200)
         self.assertEqual(res["interactive"], 100)
 
+    def test_sums_all_token_buckets(self):
+        t = Turn(uuid="u", message_id="m", request_id="r", session_id="s",
+                 cwd="/tmp/p", timestamp=None, model="claude-opus-4-8",
+                 usage=Usage(input_tokens=10, output_tokens=20, cache_read_tokens=30,
+                             cache_write_5m_tokens=40, cache_write_1h_tokens=50),
+                 attribution_skill="x")
+        res = attribution.by_dimension([self._sess([t])], "attribution_skill")
+        self.assertEqual(res["x"], 150)  # 10+20+30+40+50
+
 
 if __name__ == "__main__":
     unittest.main()

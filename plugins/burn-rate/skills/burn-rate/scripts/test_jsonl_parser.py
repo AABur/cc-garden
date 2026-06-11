@@ -1,5 +1,4 @@
 # test_jsonl_parser.py
-import io
 import unittest
 import jsonl_parser as jp
 

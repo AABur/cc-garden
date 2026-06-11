@@ -28,7 +28,7 @@ class TestPricing(unittest.TestCase):
         b = pricing.TokenBreakdown(input_tokens=1_000_000)
         self.assertEqual(pricing.estimate_cost(b, "<synthetic>"), 0.0)
 
-    def test_unknown_costs_zero_and_flagged(self):
+    def test_unknown_costs_zero(self):
         b = pricing.TokenBreakdown(input_tokens=1_000_000)
         self.assertEqual(pricing.estimate_cost(b, "gpt-5.4"), 0.0)
 

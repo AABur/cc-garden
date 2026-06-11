@@ -39,7 +39,7 @@ def detect(sessions, config, pricing) -> list:
         title=f"Opus on {len(simple)} interactive simple turns",
         severity=severity, category="model",
         evidence=[f"{len(simple)} interactive Opus turns with <{OUTPUT_THRESHOLD} output tokens",
-                  f"Excludes workflow/subagent turns (separate concern)",
+                  "Excludes workflow/subagent turns (separate concern)",
                   f"Opus est ${opus_cost:.2f} vs Sonnet est ${sonnet_cost:.2f} (weekly, list)"],
         est_weekly_tokens=tokens, est_weekly_cost_usd=round(opus_cost, 2),
         est_weekly_savings_usd=savings,
