@@ -9,28 +9,32 @@ LOW_RATIO = 0.5
 
 
 def _session_totals(s):
-    inp = cr = 0
+    inp = cr = turns = 0
     model_counts = {}
     for t in s.turns:
         if not t.usage:
             continue
+        turns += 1
         inp += t.usage.input_tokens
         cr += t.usage.cache_read_tokens
         if t.model:
             model_counts[t.model] = model_counts.get(t.model, 0) + 1
     model = max(model_counts, key=model_counts.get) if model_counts else None
-    return inp, cr, model
+    return inp, cr, model, turns
 
 
 def detect(sessions, config, pricing) -> list:
     flagged = []
     for s in sessions:
-        inp, cr, model = _session_totals(s)
+        inp, cr, model, turns = _session_totals(s)
         denom = inp + cr
         if denom < MIN_INPUT:
             continue
+        # Caching is a per-turn prefix concern: compare the AVERAGE input per turn
+        # (inp / turns) against the model's cacheable minimum, not the session total.
+        # A session of many tiny-input turns can't cache even though inp is large.
         min_prefix = pricing.cacheable_minimum(model)
-        if min_prefix and inp < min_prefix:
+        if min_prefix and turns and inp < min_prefix * turns:
             continue
         ratio = cr / denom if denom else 0.0
         if ratio < LOW_RATIO:

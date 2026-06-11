@@ -18,6 +18,14 @@ class TestConfigInspector(unittest.TestCase):
         settings = {"hooks": {"SessionStart": [{"hooks": [{"command": "x"}, {"command": "y"}]}]}}
         self.assertEqual(len(ci.read_hooks(settings, "global")), 2)
 
+    def test_read_hooks_skips_malformed(self):
+        # Malformed user settings.json: a non-dict group and a non-dict hook must be
+        # skipped defensively rather than raising AttributeError and breaking the audit.
+        settings = {"hooks": {"SessionStart": ["bad-group", {"hooks": ["bad-hook", {"command": "ok"}]}]}}
+        result = ci.read_hooks(settings, "global")
+        self.assertEqual(len(result), 1)
+        self.assertEqual(result[0]["command"], "ok")
+
     def test_claude_md_size(self):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "CLAUDE.md"

@@ -45,7 +45,11 @@ def read_hooks(settings: dict, scope: str) -> list:
         if not isinstance(groups, list):
             continue
         for group in groups:
+            if not isinstance(group, dict):
+                continue
             for hook in group.get("hooks", []) or []:
+                if not isinstance(hook, dict):
+                    continue
                 out.append({"event": event, "command": hook.get("command", ""), "scope": scope})
     return out
 

@@ -26,7 +26,13 @@ class TestCache(unittest.TestCase):
         self.assertEqual(cache.detect([self._sess(turns)], None, pricing), [])
 
     def test_no_flag_when_input_tiny(self):
-        turns = [_turn(2000, 0)]  # below cacheable minimum, not user's fault
+        turns = [_turn(2000, 0)]  # denom 2000 < MIN_INPUT -> skipped by the first guard
+        self.assertEqual(cache.detect([self._sess(turns)], None, pricing), [])
+
+    def test_no_flag_many_tiny_input_turns(self):
+        # 600 turns x 1000 input, 0 cache read -> denom 600k >= MIN_INPUT and ratio 0,
+        # but avg input/turn (1000) < opus cacheable min (4096) -> not user's fault, skip.
+        turns = [_turn(1000, 0) for _ in range(600)]
         self.assertEqual(cache.detect([self._sess(turns)], None, pricing), [])
 
 
