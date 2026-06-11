@@ -31,7 +31,7 @@ def run_audit(days: int = 7) -> dict:
             leaks.extend(mod.detect(sessions, config, pricing))
         except Exception as e:
             detector_errors.append(f"{mod_path}: {type(e).__name__}: {e}")
-    leaks.sort(key=lambda l: l.est_weekly_savings_usd, reverse=True)
+    leaks.sort(key=lambda leak: leak.est_weekly_savings_usd, reverse=True)
 
     bottlenecks = {
         "by_skill": attribution.top_n(attribution.by_dimension(sessions, "attribution_skill")),
@@ -62,8 +62,8 @@ def run_audit(days: int = 7) -> dict:
         "ccusage_error": ccusage_error,
         "detector_errors": detector_errors,
         "bottlenecks": bottlenecks,
-        "leaks": [asdict(l) if is_dataclass(l) else l for l in leaks],
-        "total_weekly_savings_usd": round(sum(l.est_weekly_savings_usd for l in leaks), 2),
+        "leaks": [asdict(leak) if is_dataclass(leak) else leak for leak in leaks],
+        "total_weekly_savings_usd": round(sum(leak.est_weekly_savings_usd for leak in leaks), 2),
         "pricing_snapshot_date": pricing.SNAPSHOT_DATE,
     }
 

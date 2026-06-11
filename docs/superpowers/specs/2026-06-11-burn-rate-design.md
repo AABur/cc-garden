@@ -117,10 +117,12 @@ plugins/burn-rate/
   `None` + error string; audit proceeds and the report notes the absence.
 - **`pricing`** — 2026 per-million table with buckets
   `input / output / cache_write_5m (1.25×) / cache_write_1h (2×) / cache_read
-  (0.1×)`, `service_tier` aware, per-model **cacheable minimum** (4096 Opus /
+  (0.1×)`, per-model **cacheable minimum** (4096 Opus /
   2048 Sonnet·Fable / 1024 Sonnet 4.5). Resolves model IDs to the 2026 lineup;
   no Opus fallback for unknown models (returns explicit "unknown" rather than
-  mispricing). Optionally reads `ccusage` `defaults.pricingOverrides`.
+  mispricing). `service_tier` is captured on each turn but not yet applied to
+  pricing; `service_tier`-aware rates and `ccusage` `defaults.pricingOverrides`
+  overlay are deferred to a later phase.
 - **`attribution`** — aggregates deduped tokens by skill / plugin / mcp / agent /
   `sessionKind` (interactive vs workflow vs subagent) / branch → the Pareto
   "where to look first" view.

@@ -8,7 +8,7 @@ from unittest import mock
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-import ccusage
+import ccusage  # noqa: E402
 
 
 class TestCcusage(unittest.TestCase):

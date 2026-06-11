@@ -6,7 +6,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-import jsonl_parser as jp
+import jsonl_parser as jp  # noqa: E402
 
 
 def _assistant_line(uuid, msg_id, req_id, model="claude-opus-4-8",
@@ -56,6 +56,21 @@ class TestParser(unittest.TestCase):
     def test_synthetic_model_preserved(self):
         t = jp.parse_turn(_assistant_line("u1", "m1", "r1", model="<synthetic>"))
         self.assertEqual(t.model, "<synthetic>")
+
+    def test_naive_timestamp_normalized_to_utc(self):
+        # A transcript timestamp with no offset must come back tz-aware (UTC),
+        # else comparing it against the aware `since` cutoff raises TypeError.
+        line = _assistant_line("u1", "m1", "r1")
+        line["timestamp"] = "2026-06-10T00:00:00"  # no Z, no offset
+        t = jp.parse_turn(line)
+        self.assertIsNotNone(t.timestamp.tzinfo)
+
+    def test_non_dict_usage_does_not_crash(self):
+        # Malformed transcript: usage is a list, not a dict. Must not raise.
+        line = _assistant_line("u1", "m1", "r1")
+        line["message"]["usage"] = ["bad"]
+        t = jp.parse_turn(line)
+        self.assertEqual(t.usage.input_tokens, 0)
 
 
 if __name__ == "__main__":

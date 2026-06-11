@@ -6,9 +6,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from jsonl_parser import Turn, Usage, Session
-import pricing
-from detectors import context_rot
+from jsonl_parser import Turn, Usage, Session  # noqa: E402
+import pricing  # noqa: E402
+from detectors import context_rot  # noqa: E402
 
 
 def _turn(ctx):

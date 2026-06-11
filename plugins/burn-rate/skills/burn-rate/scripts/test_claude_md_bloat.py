@@ -6,9 +6,9 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from jsonl_parser import Session
-import pricing
-from detectors import claude_md_bloat as cmb
+from jsonl_parser import Session  # noqa: E402
+import pricing  # noqa: E402
+from detectors import claude_md_bloat as cmb  # noqa: E402
 
 
 class FakeConfig:

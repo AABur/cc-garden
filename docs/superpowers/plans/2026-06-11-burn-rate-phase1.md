@@ -610,13 +610,16 @@ or ccusage is missing, returns (None, error) and the audit proceeds without it.
 """
 from __future__ import annotations
 import json
+import os
 import subprocess
 from datetime import datetime, timedelta, timezone
+
+_CCUSAGE_VERSION = os.environ.get("CCUSAGE_VERSION", "20.0.11")
 
 
 def _run(args: list, timeout: int = 180) -> tuple:
     try:
-        proc = subprocess.run(["npx", "-y", "ccusage@latest", *args],
+        proc = subprocess.run(["npx", "-y", f"ccusage@{_CCUSAGE_VERSION}", *args],
                               capture_output=True, text=True, timeout=timeout)
         return proc.returncode, proc.stdout, proc.stderr
     except FileNotFoundError:

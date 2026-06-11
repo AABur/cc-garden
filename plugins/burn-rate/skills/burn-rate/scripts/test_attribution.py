@@ -6,8 +6,8 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-import attribution
-from jsonl_parser import Turn, Usage, Session
+import attribution  # noqa: E402
+from jsonl_parser import Turn, Usage, Session  # noqa: E402
 
 
 def _t(skill=None, plugin=None, agent=None, kind=None, out=100):
@@ -29,6 +29,14 @@ class TestAttribution(unittest.TestCase):
         res = attribution.by_dimension([s], "attribution_skill")
         self.assertEqual(res["find-skills"], 150)
         self.assertEqual(res["retro"], 30)
+
+    def test_missing_skill_buckets_as_unknown(self):
+        # Turns without attribution must still be counted, under '<unknown>',
+        # so the Pareto totals don't silently omit a large share of tokens.
+        s = self._sess([_t(skill="retro", out=30), _t(skill=None, out=70)])
+        res = attribution.by_dimension([s], "attribution_skill")
+        self.assertEqual(res["retro"], 30)
+        self.assertEqual(res["<unknown>"], 70)
 
     def test_workflow_vs_interactive(self):
         s = self._sess([_t(kind="bg", out=200), _t(kind=None, out=100)])

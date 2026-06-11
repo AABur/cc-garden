@@ -70,16 +70,25 @@ def _ts(s):
     if not s:
         return None
     try:
-        return datetime.fromisoformat(str(s).replace("Z", "+00:00"))
+        dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
     except (ValueError, TypeError):
         return None
+    # Normalize to tz-aware UTC: transcripts without an offset would otherwise
+    # yield naive datetimes that raise TypeError when compared with the aware
+    # `since` cutoff, silently dropping the whole file.
+    if dt.tzinfo is None:
+        return dt.replace(tzinfo=timezone.utc)
+    return dt
 
 
 def parse_turn(raw: dict) -> Optional[Turn]:
     if raw.get("type") != "assistant":
         return None
-    msg = raw.get("message", {}) or {}
-    u = msg.get("usage", {}) or {}
+    msg = raw.get("message", {})
+    if not isinstance(msg, dict):
+        return None
+    u = msg.get("usage")
+    u = u if isinstance(u, dict) else {}
     cc = u.get("cache_creation")
     if isinstance(cc, dict):
         c5 = int(cc.get("ephemeral_5m_input_tokens", 0) or 0)
@@ -182,6 +191,7 @@ def parse_all(projects_dir: Path = Path.home() / ".claude" / "projects",
             sess = parse_session_file(p, since=since)
             if sess.deduped_turn_count > 0:
                 sessions.append(sess)
-        except OSError:
+        except Exception:
+            # One malformed/unreadable transcript must not abort the whole audit.
             continue
     return sessions
