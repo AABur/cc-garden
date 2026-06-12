@@ -84,14 +84,14 @@ class ParseStats:
 class CausalEvent:
     tool_use_id: str
     session_id: str
-    event_type: str            # "tool_result"
+    event_type: str            # "tool_result" or "hook"
     tool_name: str = ""        # Bash, Read, Edit, Write, etc.
     command_head: str = ""     # First 80 chars of Bash command only
     file_path: str = ""        # Path for Read/Edit/Write
     is_error: bool = False
     content_size: int = 0      # len(str(content)) of tool result
-    hook_name: str = ""        # reserved for Step later
-    hook_event: str = ""       # reserved for Step later
+    hook_name: str = ""        # e.g. "SessionStart:clear" for hook events
+    hook_event: str = ""       # e.g. "SessionStart" for hook events
 
 
 def _ts(s):
@@ -247,6 +247,29 @@ def build_session_from_records(session_id: str, records: list) -> tuple:
                 evt.is_error = bool(item.get("is_error", False))
                 evt.content_size = len(str(item.get("content", "")))
                 causal_events.append(evt)
+
+        elif rec_type == "attachment":
+            att = raw.get("attachment")
+            if not isinstance(att, dict):
+                continue
+            att_type = att.get("type", "")
+            if not att_type.startswith("hook_"):
+                continue
+            stats.hook_events += 1
+            # Measure size only — never persist the injected content/stdout
+            # (privacy parity with the 80-char command_head cap above).
+            content = att.get("content") or att.get("stdout") or ""
+            exit_code = att.get("exitCode", 0) or 0
+            is_error = att_type == "hook_error" or int(exit_code) != 0
+            causal_events.append(CausalEvent(
+                tool_use_id=att.get("toolUseID", "") or "",
+                session_id=session_id,
+                event_type="hook",
+                hook_name=att.get("hookName", "") or "",
+                hook_event=att.get("hookEvent", "") or "",
+                content_size=len(content),
+                is_error=is_error,
+            ))
 
     stats.duplicates_removed = parseable_assistant - stats.deduped_assistant_requests
     stats.total_parsed_events = stats.raw_assistant_records + stats.user_tool_events + stats.hook_events
