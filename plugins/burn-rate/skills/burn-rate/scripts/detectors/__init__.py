@@ -9,6 +9,9 @@ DETECTOR_MODULES = [
     "detectors.context_rot",
     "detectors.cache",
     "detectors.claude_md_bloat",
+    "detectors.hook_output_bloat",
+    "detectors.bash_antipatterns",
+    "detectors.repeated_reads",
 ]
 
 SEVERITIES = ("critical", "warning", "suggestion")
