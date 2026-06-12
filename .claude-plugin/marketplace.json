@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "cc-garden",
-  "description": "Personal collection of Claude Code plugins — utilities for Python project bootstrap, classified-ad posting, and project retrospective analysis.",
+  "description": "Personal collection of Claude Code plugins — Python project bootstrap and design patterns, classified-ad posting, project retrospectives, weekly luck-break reflection, and token-spend auditing.",
   "owner": {
     "name": "Alexander Burchenko",
     "email": "aabur@mail.ru"
@@ -36,7 +36,7 @@
     },
     {
       "name": "python-patterns",
-      "description": "Apply Gang-of-Four and Python-specific design patterns to Python code with a Pythonic-first bias. Catalog covers 36 patterns from faif/python-patterns plus anti-pattern guidance for Singleton, God Object, and inheritance overuse. Use for pattern selection in new code, refactoring naive code into patterns, and code review.",
+      "description": "Apply Gang-of-Four and Python-specific design patterns to Python code with a Pythonic-first bias. Catalog covers 38 patterns from faif/python-patterns plus anti-pattern guidance for Singleton, God Object, and inheritance overuse. Use for pattern selection in new code, refactoring naive code into patterns, and code review.",
       "author": {
         "name": "Alexander Burchenko",
         "email": "aabur@mail.ru"

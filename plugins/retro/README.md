@@ -86,7 +86,7 @@ of the main body unless it materially impacted project work.
 2. Resolves the report language: reads
    `<!-- retro-language: <code> -->` from the most recent report in
    `<repo>/.retro/`, or asks the user when no prior report exists.
-3. Runs the extractor (`scripts/extract_sessions.py`):
+3. Runs the extractor (`skills/retro/scripts/extract_sessions.py`):
    - Discovers all session JSONLs that belong to this project,
      including subdirectory-launched sessions, Claude worktrees, and
      subagent threads.
