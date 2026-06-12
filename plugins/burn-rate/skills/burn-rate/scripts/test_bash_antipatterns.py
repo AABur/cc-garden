@@ -78,6 +78,27 @@ class TestBashAntipatterns(unittest.TestCase):
         leaks = bash_antipatterns.detect([], events, None, None)
         self.assertEqual(leaks, [])
 
+    def test_per_command_breakdown_with_native_mapping(self):
+        # 12 grep + 5 cat + 3 find -> per-command bullets mapping to native tools
+        events = (
+            self._make_events("grep pattern file.txt", 12) +
+            self._make_events("cat file.txt", 5) +
+            self._make_events("find . -name '*.py'", 3)
+        )
+        from detectors import bash_antipatterns
+        leaks = bash_antipatterns.detect([], events, None, None)
+        self.assertEqual(len(leaks), 1)
+        evidence = leaks[0].evidence
+        self.assertTrue(any("grep" in b and "×12" in b and "Grep" in b for b in evidence))
+        self.assertTrue(any("cat" in b and "×5" in b and "Read" in b for b in evidence))
+        self.assertTrue(any("find" in b and "×3" in b and "Glob" in b for b in evidence))
+        # per-command bullets sorted by count desc: grep(12) before cat(5) before find(3)
+        grep_idx = next(i for i, b in enumerate(evidence) if "grep ×12" in b)
+        cat_idx = next(i for i, b in enumerate(evidence) if "cat ×5" in b)
+        find_idx = next(i for i, b in enumerate(evidence) if "find ×3" in b)
+        self.assertLess(grep_idx, cat_idx)
+        self.assertLess(cat_idx, find_idx)
+
     def test_empty_command_head_skipped(self):
         events = [
             CausalEvent(

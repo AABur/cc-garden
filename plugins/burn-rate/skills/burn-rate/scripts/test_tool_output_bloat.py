@@ -1,4 +1,4 @@
-# test_hook_output_bloat.py
+# test_tool_output_bloat.py
 import sys
 import unittest
 from pathlib import Path
@@ -19,7 +19,7 @@ def _ev(session_id, content_size, event_type="tool_result", tool_name="Bash"):
     )
 
 
-class TestHookOutputBloat(unittest.TestCase):
+class TestToolOutputBloat(unittest.TestCase):
 
     def test_flags_when_avg_content_size_exceeds_threshold_and_enough_sessions(self):
         # 3 sessions, each with a single tool_result of 60_000 chars -> avg 60k > 50k
@@ -28,13 +28,13 @@ class TestHookOutputBloat(unittest.TestCase):
             _ev("s2", 60_000),
             _ev("s3", 60_000),
         ]
-        from detectors import hook_output_bloat
-        leaks = hook_output_bloat.detect([], events, None, None)
+        from detectors import tool_output_bloat
+        leaks = tool_output_bloat.detect([], events, None, None)
         self.assertEqual(len(leaks), 1)
-        self.assertEqual(leaks[0].id, "causal:hook_output_bloat")
+        self.assertEqual(leaks[0].id, "causal:tool_output_bloat")
         self.assertEqual(leaks[0].severity, "warning")
         self.assertEqual(leaks[0].basis, "causal")
-        self.assertEqual(leaks[0].overlap_group, "hook_bloat")
+        self.assertEqual(leaks[0].overlap_group, "tool_output")
 
     def test_no_flag_when_content_size_small(self):
         # 3 sessions, each with 1_000 chars -> avg 1k < 50k
@@ -43,8 +43,8 @@ class TestHookOutputBloat(unittest.TestCase):
             _ev("s2", 1_000),
             _ev("s3", 1_000),
         ]
-        from detectors import hook_output_bloat
-        leaks = hook_output_bloat.detect([], events, None, None)
+        from detectors import tool_output_bloat
+        leaks = tool_output_bloat.detect([], events, None, None)
         self.assertEqual(leaks, [])
 
     def test_no_flag_when_fewer_than_3_sessions(self):
@@ -53,13 +53,13 @@ class TestHookOutputBloat(unittest.TestCase):
             _ev("s1", 100_000),
             _ev("s2", 100_000),
         ]
-        from detectors import hook_output_bloat
-        leaks = hook_output_bloat.detect([], events, None, None)
+        from detectors import tool_output_bloat
+        leaks = tool_output_bloat.detect([], events, None, None)
         self.assertEqual(leaks, [])
 
     def test_no_flag_when_no_causal_events(self):
-        from detectors import hook_output_bloat
-        leaks = hook_output_bloat.detect([], [], None, None)
+        from detectors import tool_output_bloat
+        leaks = tool_output_bloat.detect([], [], None, None)
         self.assertEqual(leaks, [])
 
     def test_only_tool_result_events_counted(self):
@@ -71,8 +71,8 @@ class TestHookOutputBloat(unittest.TestCase):
             CausalEvent(tool_use_id="x", session_id="s4", event_type="other",
                         tool_name="Bash", content_size=999_999),
         ]
-        from detectors import hook_output_bloat
-        leaks = hook_output_bloat.detect([], events, None, None)
+        from detectors import tool_output_bloat
+        leaks = tool_output_bloat.detect([], events, None, None)
         # s4 has no tool_result events -> only 3 sessions qualify -> should flag
         self.assertEqual(len(leaks), 1)
 

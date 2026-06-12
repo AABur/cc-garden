@@ -42,6 +42,10 @@ The audit builds three accounting ledgers from the local transcript store:
 - **Workload ledger** — session-level metadata (volume, timing, parallelism)
   used to classify usage patterns.
 
+Hook injections are now parsed from the transcript (`accounting_basis.hook_events`
+is populated), and skill/plugin description tax — the description tokens that load
+into context every turn — is measured as a config-level context-tax signal.
+
 > Primary cost basis is local deduplicated assistant usage. Tool, hook, and user
 > events are parsed for attribution and workflow diagnosis only; their estimates
 > are not additive spend unless explicitly reconciled.
@@ -58,7 +62,7 @@ The audit builds three accounting ledgers from the local transcript store:
 
 | Field | Description |
 |---|---|
-| `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals |
+| `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals. `hook_events` is now populated — hook injections are parsed from the transcript and counted here. |
 | `opportunity_ranking` | Ranked list of findings by `rank_signal_cost_usd` (descending). Not additive — entries may overlap. |
 | `total_savings.status` | Always `"not_reported"` because ranking scopes overlap; no single total is meaningful |
 | `reconciliation` | `ccusage` comparison status: `matched`, `skipped`, or `failed` |
@@ -73,11 +77,14 @@ The audit builds three accounting ledgers from the local transcript store:
 | `model_routing:subagent_opus_simple` | spend | Opus on short background/subagent turns |
 | `context:rot_zone` | spend | Turns past ~400k context |
 | `cache:low_hit_ratio` | spend | Cache churn, cacheable-minimum aware |
+| `cache:prefix_rewrite_after_pause` | spend | A >5-min pause between turns precedes a large cache-write (prefix rewrite); evidence includes peak-day token concentration |
 | `claude_md:bloat` | spend | CLAUDE.md over ~2k tokens |
-| `causal:hook_output_bloat` | causal | Hook stdout feeding oversized text into context |
-| `causal:bash_antipatterns` | causal | Shell commands known to inflate output (cat large files, find /, etc.) |
+| `config:skill_description_tax` | mixed | Skill/plugin descriptions load every turn (tool-search does not defer them); measures that per-turn description tax |
+| `causal:tool_output_bloat` | causal | Large tool_result output inflating per-session context |
+| `causal:hook_injection_bloat` | causal | Hook-injected content imposing a recurring context tax (groups by hook_name + hook_event; flags per-turn SessionStart/UserPromptSubmit hooks) |
+| `causal:bash_antipatterns` | causal | Per-command breakdown (grep/find/cat/head/tail/sed/awk), each mapped to its native Claude Code tool (Grep/Glob/Read/Edit) |
 | `causal:repeated_reads` | causal | Same file read 4+ times in a session with large content |
-| `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (>10 sessions/day) |
+| `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (>10 sessions/day); emits cadence evidence + optional local-model routing suggestion |
 | `workload:possible_recurring_automation` | workload | Multi-signal: high volume + short sessions + no tool-search + many hooks |
 
 ## Workflow
@@ -115,6 +122,12 @@ Sections:
    with numbers, tokens at stake, and the fix. Note that entries may overlap —
    do not sum them.
 4. **One fix to apply this week** — the single highest-leverage action.
+
+High-volume workload findings now carry cadence evidence (modal inter-session
+interval + CV%, off-hours %, interactive share, sidechain share, top sessions) and
+an optional `suggested_action` that may recommend routing an unattended batch job
+to a local model (e.g. Ollama). Surface that suggestion as routing advice only — it
+is explicitly not a token/cost savings claim.
 
 ### Step 3: Framing rules (read this)
 

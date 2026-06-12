@@ -1,5 +1,5 @@
-# detectors/hook_output_bloat.py
-"""Detects sessions where hook output creates measurable context tax."""
+# detectors/tool_output_bloat.py
+"""Detects sessions where large tool_result output creates measurable context tax."""
 from . import Leak
 
 BLOAT_THRESHOLD_CHARS = 50_000    # aggregate tool_result content per session
@@ -28,12 +28,12 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
     est_tokens = total // 4  # approximate chars-to-tokens ratio
 
     return [Leak(
-        id="causal:hook_output_bloat",
+        id="causal:tool_output_bloat",
         title="Large tool output injected into context",
         severity="warning",
         category="workflow",
         basis="causal",
-        overlap_group="hook_bloat",
+        overlap_group="tool_output",
         additive=False,
         evidence=[
             f"{len(by_session)} sessions with tool_result events",
@@ -42,5 +42,5 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
         est_weekly_tokens=est_tokens,
         est_weekly_cost_usd=0.0,
         est_weekly_savings_usd=0.0,
-        fix_action="Review hook output size; large hook outputs are injected into context on every turn",
+        fix_action="Review tool output size; large tool outputs are injected into context and persist across turns",
     )]

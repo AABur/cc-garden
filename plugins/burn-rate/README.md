@@ -40,7 +40,7 @@ audit still runs without it using token counts only.
 | `--skip-ccusage` | off | Skip the `ccusage` baseline entirely |
 | `--ccusage-timeout N` | 25 | Seconds to wait for `npx ccusage` before aborting |
 
-## What it checks (Phase 1 + Phase 2)
+## What it checks (Phase 1 + Phase 2 + Phase 3)
 
 ### Spend detectors
 
@@ -50,21 +50,29 @@ audit still runs without it using token counts only.
 | `model_routing:subagent_opus_simple` | Opus on short background/subagent turns |
 | `context:rot_zone` | Turns past ~400k context |
 | `cache:low_hit_ratio` | Cache churn, cacheable-minimum aware |
+| `cache:prefix_rewrite_after_pause` | A >5-min pause precedes a large cache-write (prefix rewrite); evidence includes peak-day token concentration |
 | `claude_md:bloat` | CLAUDE.md over ~2k tokens |
 
-### Causal detectors (Phase 2)
+### Config detectors (Phase 3)
 
 | id | what it catches |
 |---|---|
-| `causal:hook_output_bloat` | Hook stdout feeding oversized text into context |
-| `causal:bash_antipatterns` | Shell commands known to inflate output (cat large files, find /, etc.) |
+| `config:skill_description_tax` | Skill/plugin descriptions load into context every turn (tool-search does not defer them); measures that per-turn description tax |
+
+### Causal detectors (Phase 2 + Phase 3)
+
+| id | what it catches |
+|---|---|
+| `causal:tool_output_bloat` | Large tool_result output inflating per-session context |
+| `causal:hook_injection_bloat` | Hook-injected content imposing a recurring context tax (groups by hook_name + hook_event; flags per-turn SessionStart/UserPromptSubmit hooks) |
+| `causal:bash_antipatterns` | Per-command breakdown (grep/find/cat/head/tail/sed/awk), each mapped to its native Claude Code tool (Grep/Glob/Read/Edit) |
 | `causal:repeated_reads` | Same file read 4+ times in a session with large content |
 
-### Workload detectors (Phase 2)
+### Workload detectors (Phase 2 + Phase 3)
 
 | id | what it catches |
 |---|---|
-| `workload:high_volume_parallel_workload` | Projects with high parallel session volume (>10 sessions/day) |
+| `workload:high_volume_parallel_workload` | Projects with high parallel session volume (>10 sessions/day); emits cadence evidence + an optional local-model routing suggestion (not a savings claim) |
 | `workload:possible_recurring_automation` | Multi-signal: high volume + short sessions + no tool-search + many hooks |
 
 ## Output schema
@@ -73,7 +81,7 @@ Key top-level fields:
 
 | Field | Description |
 |---|---|
-| `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals |
+| `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals. `hook_events` is now populated — hook injections are parsed and counted. |
 | `opportunity_ranking` | Ranked list of findings by `rank_signal_cost_usd` (descending). **Not additive** — entries may overlap. |
 | `total_savings` | Always `status: "not_reported"` because ranking scopes overlap |
 | `reconciliation` | `ccusage` comparison status: `matched`, `skipped`, or `failed` |
