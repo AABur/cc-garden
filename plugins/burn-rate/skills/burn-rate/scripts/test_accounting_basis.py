@@ -48,7 +48,7 @@ class TestParseStatsCounts(unittest.TestCase):
             _assistant_record("u2", "m1", "r1"),  # duplicate of first
             _assistant_record("u3", "m2", "r2"),
         ]
-        _sess, stats = jp.build_session_from_records("s1", records)
+        _sess, _causal_events, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.raw_assistant_records, 3)
         self.assertEqual(stats.deduped_assistant_requests, 2)
         self.assertEqual(stats.duplicates_removed, 1)
@@ -59,7 +59,7 @@ class TestParseStatsCounts(unittest.TestCase):
             _assistant_record("u1", "m1", "r1", sidechain=False),
             _assistant_record("u2", "m2", "r2", sidechain=True),
         ]
-        _sess, stats = jp.build_session_from_records("s1", records)
+        _sess, _causal_events, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.sidechain_assistant_records, 1)
 
     def test_parse_stats_counts_user_tool_events(self):
@@ -70,7 +70,7 @@ class TestParseStatsCounts(unittest.TestCase):
             _user_record("u3"),
             _assistant_record("u4", "m2", "r2"),
         ]
-        _sess, stats = jp.build_session_from_records("s1", records)
+        _sess, _causal_events, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.user_tool_events, 2)
 
     def test_parse_stats_total_is_assistant_plus_user(self):
@@ -80,13 +80,13 @@ class TestParseStatsCounts(unittest.TestCase):
             _assistant_record("u2", "m2", "r2"),
             _user_record("u3"),
         ]
-        _sess, stats = jp.build_session_from_records("s1", records)
+        _sess, _causal_events, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.total_parsed_events, 3)  # 2 assistant + 1 user, hook_events=0
 
     def test_parse_stats_hook_events_zero(self):
         # hook_events is 0 in Phase 2 Step 1 (hook parsing comes in Step 3)
         records = [_assistant_record("u1", "m1", "r1")]
-        _sess, stats = jp.build_session_from_records("s1", records)
+        _sess, _causal_events, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.hook_events, 0)
 
     def test_sidechain_count_is_raw_not_deduped(self):
@@ -96,15 +96,15 @@ class TestParseStatsCounts(unittest.TestCase):
             {"type": "assistant", "isSidechain": True, "message": {"id": "m1", "role": "assistant", "content": [], "usage": {"input_tokens": 10, "output_tokens": 5}}, "requestId": "r1"},
             {"type": "assistant", "isSidechain": True, "message": {"id": "m1", "role": "assistant", "content": [], "usage": {"input_tokens": 10, "output_tokens": 5}}, "requestId": "r1"},  # duplicate
         ]
-        _, stats = jp.build_session_from_records("s1", records)
+        _, _causal_events, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.raw_assistant_records, 2)
         self.assertEqual(stats.deduped_assistant_requests, 1)
         self.assertEqual(stats.sidechain_assistant_records, 2)  # raw count, not deduped
 
 
 class TestParseSessionFileReturnsTuple(unittest.TestCase):
-    def test_parse_session_file_returns_three_tuple(self):
-        # parse_session_file must return (session, stats, bad_lines)
+    def test_parse_session_file_returns_four_tuple(self):
+        # parse_session_file must return (session, causal_events, stats, bad_lines)
         import tempfile
         import json as _json
         record = _assistant_record("u1", "m1", "r1")
@@ -112,8 +112,9 @@ class TestParseSessionFileReturnsTuple(unittest.TestCase):
             p = Path(d) / "s1.jsonl"
             p.write_text(_json.dumps(record) + "\n", encoding="utf-8")
             result = jp.parse_session_file(p, since=None)
-        self.assertEqual(len(result), 3, "parse_session_file must return a 3-tuple (session, stats, bad_lines)")
-        sess, stats, bad_lines = result
+        self.assertEqual(len(result), 4, "parse_session_file must return a 4-tuple (session, causal_events, stats, bad_lines)")
+        sess, causal_events, stats, bad_lines = result
+        self.assertIsInstance(causal_events, list)
         self.assertIsInstance(stats, jp.ParseStats)
         self.assertEqual(bad_lines, 0)
 
