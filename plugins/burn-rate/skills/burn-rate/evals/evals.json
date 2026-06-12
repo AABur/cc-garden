@@ -8,11 +8,11 @@
       "expected_output": "The skill runs the bundled audit (audit.py --skip-ccusage), then summarizes the largest cost surfaces from the local deduplicated transcript usage. It presents an opportunity ranking rather than a single summed 'total savings' number, and notes that ccusage was skipped.",
       "files": [],
       "expectations": [
-        "The skill executed the bundled scripts/audit.py rather than reimplementing token accounting inline",
-        "The audit was run with --skip-ccusage (ccusage baseline not required)",
-        "The summary ranks optimization opportunities (opportunity_ranking) instead of presenting a single additive total_weekly_savings_usd figure",
-        "The response does not claim a fabricated grand-total savings number; it reflects that total_savings.status is 'not_reported' because detector scopes overlap",
-        "No configuration files were edited or written (read-only diagnosis)"
+        "The skill runs the bundled audit script (python3 \"${CLAUDE_SKILL_DIR}/scripts/audit.py\") to produce the audit JSON",
+        "The audit is run with --skip-ccusage and reconciliation.status is reported as \"skipped\"",
+        "The output includes opportunity_ranking and total_savings.status == \"not_reported\" (non-additive ranking; do not sum overlapping scopes)",
+        "The output does not include a grand-total additive savings field such as total_weekly_savings_usd",
+        "Read-only diagnosis: no Edit/Write tool calls and no settings.json/CLAUDE.md (or other files) are modified"
       ]
     },
     {
