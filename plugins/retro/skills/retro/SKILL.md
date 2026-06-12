@@ -130,10 +130,15 @@ most recent report (or deletes that report) and runs `/retro` again.
 ## Step 3 — Run the extractor
 
 ```bash
-python3 "${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/plugins/cc-garden/plugins/retro}/scripts/extract_sessions.py" \
+python3 "${CLAUDE_SKILL_DIR}/scripts/extract_sessions.py" \
   --project-root "$(git rev-parse --show-toplevel)" \
   --budget-chars 320000
 ```
+
+`${CLAUDE_SKILL_DIR}` resolves to this skill's own directory, so the path is
+correct at any install location. If the variable is unset, find the script with
+`find ~/.claude -path '*retro*/scripts/extract_sessions.py' | head -1` and run
+that path.
 
 The extractor is **read-only** — it does not write anything. It prints a
 single JSON object to stdout. Parse it. Possible shapes:

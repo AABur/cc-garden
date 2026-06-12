@@ -4,7 +4,7 @@ Trigger-accuracy evaluation for the `/retro` skill description.
 
 ## Files
 
-- `trigger-eval.json` — 20 realistic queries, each tagged `should_trigger: true|false`. 10 positive cases (cover decision timeline, abandoned approaches, loops, F-rules, intent-vs-state, project archaeology, both ru/en) and 10 negative cases (near-misses with overlapping skills: claude-md-management, sprint retro, git log, find-docs, gen-test, new-python-project, brainstorming).
+- `trigger-eval.json` — 25 realistic queries, each tagged `should_trigger: true|false`. 14 positive cases (cover decision timeline, abandoned approaches, loops, F-rules, intent-vs-state, project archaeology, both ru/en) and 11 negative cases (near-misses with overlapping skills: claude-md-management, sprint retro, git log, find-docs, gen-test, new-python-project, brainstorming).
 
 ## Re-run the optimization loop
 
