@@ -211,24 +211,19 @@ def _interval_cv(intervals):
 
 
 def _session_tokens(session):
-    """Sum token buckets for a single session (session total plus per-turn usage).
+    """Sum token buckets for a single session from its rolled-up total_usage.
 
-    Per-turn usage is summed so fixtures that only populate Turn.usage still yield
-    a meaningful ranking, while real sessions also reflect their rolled-up total.
+    Reads total_usage only — consistent with _total_tokens and with how
+    build_session_from_records populates it (total_usage is the sum of the
+    session's per-turn usage). Summing per-turn usage on top of total_usage
+    would double-count real sessions.
     """
-    total = 0
     u = session.total_usage
-    if u is not None:
-        total += (u.input_tokens + u.output_tokens
-                  + u.cache_read_tokens + u.cache_write_5m_tokens
-                  + u.cache_write_1h_tokens)
-    for t in session.turns:
-        tu = t.usage
-        if tu is not None:
-            total += (tu.input_tokens + tu.output_tokens
-                      + tu.cache_read_tokens + tu.cache_write_5m_tokens
-                      + tu.cache_write_1h_tokens)
-    return total
+    if u is None:
+        return 0
+    return (u.input_tokens + u.output_tokens
+            + u.cache_read_tokens + u.cache_write_5m_tokens
+            + u.cache_write_1h_tokens)
 
 
 def _top_sessions_by_tokens(sessions, limit=2):

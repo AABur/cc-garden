@@ -42,6 +42,18 @@ def _session(session_id, cwd, turns, first_ts, last_ts, models_used=None):
     s.first_timestamp = first_ts
     s.last_timestamp = last_ts
     s.models_used = models_used or {"claude-sonnet-4-6": len(turns)}
+    # Roll up total_usage from per-turn usage, mirroring how
+    # build_session_from_records populates it in production. Without this,
+    # total_usage stays zero and token-based evidence diverges from real data.
+    for t in turns:
+        tu = t.usage
+        if tu is not None:
+            u = s.total_usage
+            u.input_tokens += tu.input_tokens
+            u.output_tokens += tu.output_tokens
+            u.cache_read_tokens += tu.cache_read_tokens
+            u.cache_write_5m_tokens += tu.cache_write_5m_tokens
+            u.cache_write_1h_tokens += tu.cache_write_1h_tokens
     return s
 
 
