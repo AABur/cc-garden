@@ -20,7 +20,9 @@ def _opus(out, sidechain=False, kind=None):
 
 class TestModelSelection(unittest.TestCase):
     def _sess(self, turns):
-        s = Session(session_id="s", cwd="/tmp/p"); s.turns = turns; return s
+        s = Session(session_id="s", cwd="/tmp/p")
+        s.turns = turns
+        return s
 
     def test_flags_interactive_simple_opus(self):
         turns = [_opus(50) for _ in range(40)]

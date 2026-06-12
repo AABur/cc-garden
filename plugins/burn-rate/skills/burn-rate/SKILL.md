@@ -50,7 +50,9 @@ technical terms like ccusage, /compact, CLAUDE.md, MCP untranslated).
 
 Sections:
 1. **Spend summary** — from `ccusage` (total, by model, trend). If `ccusage_error`
-   is set, say so and proceed with token counts only.
+   is set, say so and proceed with token counts only. If `parser_errors` is
+   non-empty, warn that some transcripts were skipped or partially unreadable, so
+   the totals below may be incomplete.
 2. **Where to look first (Pareto)** — from `bottlenecks`: top skills / plugins /
    agents / session-kinds by tokens. This is the attribution view the original
    skill lacks.

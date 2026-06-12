@@ -56,10 +56,14 @@ class Session:
     cwd: str = ""
     turns: list = field(default_factory=list)
     total_usage: Usage = field(default_factory=Usage)
-    deduped_turn_count: int = 0
     models_used: dict = field(default_factory=dict)
     first_timestamp: Optional[datetime] = None
     last_timestamp: Optional[datetime] = None
+
+    @property
+    def deduped_turn_count(self) -> int:
+        # Derived from turns so it can never drift out of sync with the list.
+        return len(self.turns)
 
     @property
     def project(self) -> str:
@@ -139,7 +143,6 @@ def build_session_from_records(session_id: str, records: list) -> Session:
         if not sess.cwd and turn.cwd:
             sess.cwd = turn.cwd
         sess.turns.append(turn)
-        sess.deduped_turn_count += 1
         if turn.usage:
             u, t = sess.total_usage, turn.usage
             u.input_tokens += t.input_tokens
@@ -157,8 +160,12 @@ def build_session_from_records(session_id: str, records: list) -> Session:
     return sess
 
 
-def parse_session_file(path: Path, since: Optional[datetime]) -> Session:
+def parse_session_file(path: Path, since: Optional[datetime]) -> tuple:
+    """Return (session, bad_lines) where bad_lines counts JSON lines that failed
+    to parse — surfaced upstream so a partially-corrupt transcript is not silently
+    counted as complete."""
     records = []
+    bad_lines = 0
     with path.open("r", encoding="utf-8", errors="replace") as f:
         for line in f:
             line = line.strip()
@@ -167,6 +174,7 @@ def parse_session_file(path: Path, since: Optional[datetime]) -> Session:
             try:
                 raw = json.loads(line)
             except json.JSONDecodeError:
+                bad_lines += 1
                 continue
             if since is not None:
                 ts = _ts(raw.get("timestamp"))
@@ -174,24 +182,33 @@ def parse_session_file(path: Path, since: Optional[datetime]) -> Session:
                     continue
             records.append(raw)
     sess = build_session_from_records(path.stem, records)
-    return sess
+    return sess, bad_lines
 
 
 def parse_all(projects_dir: Path = Path.home() / ".claude" / "projects",
-              since_days: int = 7) -> list:
+              since_days: int = 7) -> tuple:
+    """Return (sessions, errors). `errors` lists transcripts that were skipped or
+    partially unreadable, so the audit can surface that its numbers were computed
+    over an incomplete dataset rather than reporting silently truncated totals."""
     if not projects_dir.exists():
-        return []
+        return [], []
     since = datetime.now(timezone.utc) - timedelta(days=since_days)
     cutoff = since.timestamp()
-    sessions = []
+    sessions, errors = [], []
     for p in projects_dir.rglob("*.jsonl"):
         try:
             if p.stat().st_mtime < cutoff:
                 continue
-            sess = parse_session_file(p, since=since)
+            sess, bad_lines = parse_session_file(p, since=since)
+            if bad_lines:
+                errors.append(f"{p.name}: {bad_lines} unparseable line(s)")
             if sess.deduped_turn_count > 0:
                 sessions.append(sess)
-        except Exception:
-            # One malformed/unreadable transcript must not abort the whole audit.
-            continue
-    return sessions
+        except OSError as e:
+            # Expected, benign-to-skip (permissions, races) — record briefly.
+            errors.append(f"{p.name}: {type(e).__name__}")
+        except Exception as e:
+            # A bug in parsing must not abort the audit, but must be surfaced —
+            # not blanket-swallowed — so wrong totals don't look complete.
+            errors.append(f"{p.name}: {type(e).__name__}: {e}")
+    return sessions, errors

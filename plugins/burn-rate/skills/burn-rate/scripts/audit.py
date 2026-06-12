@@ -21,7 +21,7 @@ from detectors import DETECTOR_MODULES
 
 def run_audit(days: int = 7) -> dict:
     ccusage_data, ccusage_error = ccusage.run_daily(days=days)
-    sessions = jsonl_parser.parse_all(since_days=days)
+    sessions, parser_errors = jsonl_parser.parse_all(since_days=days)
     config = config_inspector.build_snapshot()
 
     leaks, detector_errors = [], []
@@ -60,6 +60,7 @@ def run_audit(days: int = 7) -> dict:
         },
         "ccusage": ccusage_data,
         "ccusage_error": ccusage_error,
+        "parser_errors": parser_errors,
         "detector_errors": detector_errors,
         "bottlenecks": bottlenecks,
         "leaks": [asdict(leak) if is_dataclass(leak) else leak for leak in leaks],

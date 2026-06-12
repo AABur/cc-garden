@@ -18,6 +18,13 @@ class TestConfigInspector(unittest.TestCase):
         self.assertEqual(ci.detect_tool_search({"ENABLE_TOOL_SEARCH": "false"}, {}),
                          (False, "false"))
 
+    def test_tool_search_process_env_overrides_settings(self):
+        # Live process env takes precedence over settings.json env.
+        self.assertEqual(
+            ci.detect_tool_search({"ENABLE_TOOL_SEARCH": "false"},
+                                  {"ENABLE_TOOL_SEARCH": "true"}),
+            (True, "true"))
+
     def test_count_hooks(self):
         settings = {"hooks": {"SessionStart": [{"hooks": [{"command": "x"}, {"command": "y"}]}]}}
         self.assertEqual(len(ci.read_hooks(settings, "global")), 2)

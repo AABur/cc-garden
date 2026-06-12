@@ -19,7 +19,9 @@ def _turn(inp, cr):
 
 class TestCache(unittest.TestCase):
     def _sess(self, turns):
-        s = Session(session_id="s", cwd="/tmp/p"); s.turns = turns; return s
+        s = Session(session_id="s", cwd="/tmp/p")
+        s.turns = turns
+        return s
 
     def test_flags_low_hit_with_big_input(self):
         # 600k input, only 100k cache read -> hit ratio ~0.14, prefix >> 4096

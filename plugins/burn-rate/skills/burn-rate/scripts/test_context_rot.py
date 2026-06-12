@@ -19,7 +19,9 @@ def _turn(ctx):
 
 class TestContextRot(unittest.TestCase):
     def _sess(self, turns):
-        s = Session(session_id="s", cwd="/tmp/p"); s.turns = turns; return s
+        s = Session(session_id="s", cwd="/tmp/p")
+        s.turns = turns
+        return s
 
     def test_flags_when_enough_over_threshold(self):
         turns = [_turn(450_000) for _ in range(12)]

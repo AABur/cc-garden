@@ -27,6 +27,17 @@ class TestClaudeMdBloat(unittest.TestCase):
         cfg = FakeConfig({"/home/u/.claude/CLAUDE.md": 1500})
         self.assertEqual(cmb.detect([Session(session_id="s")], cfg, pricing), [])
 
+    def test_critical_above_critical_threshold(self):
+        cfg = FakeConfig({"/home/u/.claude/CLAUDE.md": 6000})
+        leaks = cmb.detect([Session(session_id="s")], cfg, pricing)
+        self.assertEqual(len(leaks), 1)
+        self.assertEqual(leaks[0].severity, "critical")
+
+    def test_boundary_at_target_not_flagged(self):
+        # Exactly TARGET tokens is within budget (the guard is `<= TARGET`).
+        cfg = FakeConfig({"/home/u/.claude/CLAUDE.md": cmb.TARGET})
+        self.assertEqual(cmb.detect([Session(session_id="s")], cfg, pricing), [])
+
 
 if __name__ == "__main__":
     unittest.main()

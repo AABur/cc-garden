@@ -49,7 +49,7 @@ def resolve_family(model: str | None) -> str | None:
         return "sonnet"
     if m.startswith("claude-haiku-4"):
         return "haiku"
-    if m.startswith("claude-fable-5") or m.startswith("claude-mythos-5"):
+    if m.startswith("claude-fable-5"):
         return "fable"
     return None
 

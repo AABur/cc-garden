@@ -5,6 +5,8 @@ from __future__ import annotations
 from detectors import Leak
 
 ZONE = 400_000
+# Floor before flagging: a handful of late-context turns is normal; a sustained
+# pattern (this many over the zone) is what signals a workflow-level habit.
 MIN_TURNS = 10
 
 

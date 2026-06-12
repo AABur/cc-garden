@@ -72,6 +72,46 @@ class TestParser(unittest.TestCase):
         t = jp.parse_turn(line)
         self.assertEqual(t.usage.input_tokens, 0)
 
+    def test_cache_creation_fallback_when_split_absent(self):
+        # Older transcript: no cache_creation dict, only the flat total. The whole
+        # amount must fall back to the 5m bucket, not be lost.
+        line = _assistant_line("u1", "m1", "r1")
+        del line["message"]["usage"]["cache_creation"]
+        line["message"]["usage"]["cache_creation_input_tokens"] = 700
+        t = jp.parse_turn(line)
+        self.assertEqual(t.usage.cache_write_5m_tokens, 700)
+        self.assertEqual(t.usage.cache_write_1h_tokens, 0)
+
+    def test_session_file_time_window_filters_old_records(self):
+        # Records older than `since` are dropped; newer ones are kept.
+        from datetime import datetime, timezone
+        import tempfile
+        import json as _json
+        old = _assistant_line("u1", "m1", "r1", out=10)
+        old["timestamp"] = "2026-01-01T00:00:00Z"
+        new = _assistant_line("u2", "m2", "r2", out=20)
+        new["timestamp"] = "2026-06-10T00:00:00Z"
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "s1.jsonl"
+            p.write_text("\n".join(_json.dumps(r) for r in (old, new)), encoding="utf-8")
+            since = datetime(2026, 6, 1, tzinfo=timezone.utc)
+            sess, bad = jp.parse_session_file(p, since=since)
+        self.assertEqual(bad, 0)
+        self.assertEqual(sess.deduped_turn_count, 1)
+        self.assertEqual(sess.total_usage.output_tokens, 20)
+
+    def test_session_file_counts_bad_lines(self):
+        # Unparseable JSON lines are counted and surfaced, not silently dropped.
+        import tempfile
+        import json as _json
+        good = _json.dumps(_assistant_line("u1", "m1", "r1"))
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "s1.jsonl"
+            p.write_text(good + "\n{not valid json\n", encoding="utf-8")
+            sess, bad = jp.parse_session_file(p, since=None)
+        self.assertEqual(bad, 1)
+        self.assertEqual(sess.deduped_turn_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

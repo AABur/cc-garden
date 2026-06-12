@@ -1,10 +1,14 @@
 # detectors/cache.py
-"""Sessions with low cache-hit ratio AND large input — cache churn. Skips sessions
-whose input is below the model's cacheable minimum (caching silently can't happen)."""
+"""Sessions with a low cache-hit ratio AND a large prompt — cache churn. Skips
+sessions whose per-turn prompt is below the model's cacheable minimum (caching
+silently can't happen, so a low ratio there is not the user's fault)."""
 from __future__ import annotations
 from detectors import Leak
 
-MIN_INPUT = 500_000      # only worth flagging above this weekly input
+# Size gate: a session's input + cache-read total below this is too small to matter.
+MIN_INPUT = 500_000
+# Flag when fewer than half the context tokens are cache hits — below this the
+# session is repeatedly re-sending an uncached prefix instead of reusing it.
 LOW_RATIO = 0.5
 
 
@@ -30,11 +34,12 @@ def detect(sessions, config, pricing) -> list:
         denom = inp + cr
         if denom < MIN_INPUT:
             continue
-        # Caching is a per-turn prefix concern: compare the AVERAGE input per turn
-        # (inp / turns) against the model's cacheable minimum, not the session total.
-        # A session of many tiny-input turns can't cache even though inp is large.
+        # Caching is a per-turn prefix concern: compare the AVERAGE prompt per turn
+        # (denom / turns, i.e. input + cache-read) against the model's cacheable
+        # minimum, not the session total. A session of many tiny-prompt turns can't
+        # cache even though the session-wide total is large.
         min_prefix = pricing.cacheable_minimum(model)
-        if min_prefix and turns and inp < min_prefix * turns:
+        if min_prefix and turns and denom < min_prefix * turns:
             continue
         ratio = cr / denom if denom else 0.0
         if ratio < LOW_RATIO:

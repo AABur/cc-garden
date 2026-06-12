@@ -6,6 +6,8 @@ from __future__ import annotations
 from detectors import Leak
 
 OUTPUT_THRESHOLD = 1000
+# Minimum sample before the weak output-length proxy is worth surfacing — fewer
+# short Opus turns than this is noise, not a pattern.
 MIN_TURNS = 30
 
 
