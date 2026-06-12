@@ -17,6 +17,7 @@ Personal Claude Code plugin marketplace.
 | [retro](plugins/retro/) | Reconstruct decision history of the current project from local Claude Code sessions |
 | [python-patterns](plugins/python-patterns/) | Apply Gang-of-Four and Python-specific design patterns — greenfield suggestions, refactoring, and code review |
 | [lucky-break](plugins/lucky-break/) | Weekly luck-break ritual — analyze your last 7 days of conversations and suggest one pattern-breaking action |
+| [burn-rate](plugins/burn-rate/) | Audit Claude Code token spend — deduplicated transcript analysis, causal event diagnostics, workload classification, and opportunity ranking with 2026 pricing |
 
 ## Install a plugin
 
