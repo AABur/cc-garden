@@ -14,7 +14,8 @@
 | id | ledger | what it catches |
 |---|---|---|
 | `model_routing:subagent_opus_simple` | spend | Opus on short background/subagent turns |
-| `causal:hook_output_bloat` | causal | Hook stdout feeding oversized text into context |
+| `causal:tool_output_bloat` | causal | Large tool_result output inflating per-session context |
+| `causal:hook_injection_bloat` | causal | Hook-injected content imposing a recurring context tax |
 | `causal:bash_antipatterns` | causal | Shell commands known to inflate output |
 | `causal:repeated_reads` | causal | Same file read 4+ times in a session with large content |
 | `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (>10 sessions/day) |

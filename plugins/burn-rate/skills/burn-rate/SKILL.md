@@ -74,7 +74,8 @@ The audit builds three accounting ledgers from the local transcript store:
 | `context:rot_zone` | spend | Turns past ~400k context |
 | `cache:low_hit_ratio` | spend | Cache churn, cacheable-minimum aware |
 | `claude_md:bloat` | spend | CLAUDE.md over ~2k tokens |
-| `causal:hook_output_bloat` | causal | Hook stdout feeding oversized text into context |
+| `causal:tool_output_bloat` | causal | Large tool_result output inflating per-session context |
+| `causal:hook_injection_bloat` | causal | Hook-injected content imposing a recurring context tax |
 | `causal:bash_antipatterns` | causal | Shell commands known to inflate output (cat large files, find /, etc.) |
 | `causal:repeated_reads` | causal | Same file read 4+ times in a session with large content |
 | `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (>10 sessions/day) |

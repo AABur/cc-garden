@@ -56,7 +56,8 @@ audit still runs without it using token counts only.
 
 | id | what it catches |
 |---|---|
-| `causal:hook_output_bloat` | Hook stdout feeding oversized text into context |
+| `causal:tool_output_bloat` | Large tool_result output inflating per-session context |
+| `causal:hook_injection_bloat` | Hook-injected content imposing a recurring context tax |
 | `causal:bash_antipatterns` | Shell commands known to inflate output (cat large files, find /, etc.) |
 | `causal:repeated_reads` | Same file read 4+ times in a session with large content |
 
