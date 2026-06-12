@@ -10,7 +10,7 @@ AUTOMATION_INTERVAL_TOLERANCE = 0.20  # modal interval ± 20%
 OFF_HOURS_THRESHOLD = 0.80            # 80% of sessions outside 08:00-22:00 UTC
 INTERACTIVE_SHARE_THRESHOLD = 0.10    # < 10% interactive turns = suspicious
 MIN_SESSIONS_FOR_AUTOMATION = 5       # need enough data for interval analysis
-_INTERVAL_BUCKET = 1800              # 30-minute modal bucket (seconds)
+_INTERVAL_BUCKET = 60                # 1-minute modal bucket (seconds)
 
 ALL_SIGNAL_NAMES = (
     "stable_interval", "repeated_command", "single_cwd",
@@ -50,7 +50,7 @@ def _sessions_per_day(sessions):
 
 
 def _modal_interval(intervals):
-    """Return the modal 30-minute-bucketed interval (seconds), or None if unavailable.
+    """Return the modal 1-minute-bucketed interval (seconds), or None if unavailable.
 
     Returns None when there are no intervals or the modal bucket is 0 (sessions
     clustered at the same instant), which carries no cadence information.
@@ -249,7 +249,7 @@ def cadence_evidence(proj_sessions):
     modal = _modal_interval(intervals)
     cv = _interval_cv(intervals)
     if modal is None or cv is None:
-        bullets.append("Cadence: modal interval unavailable (<2 sessions)")
+        bullets.append("Cadence: modal interval unavailable (insufficient timestamped sessions)")
     else:
         bullets.append(f"Cadence: modal interval ~{modal:.0f}s (CV {cv:.0f}%)")
 

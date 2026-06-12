@@ -50,7 +50,7 @@ def _detect_prefix_rewrites(sessions):
         timed = [t for t in s.turns if t.timestamp and t.usage]
         for t in timed:
             day = t.timestamp.date()
-            peak_days[day] = peak_days.get(day, 0) + t.usage.context_size
+            peak_days[day] = peak_days.get(day, 0) + t.usage.context_size + t.usage.output_tokens
         timed.sort(key=lambda t: t.timestamp)
         for prev, cur in zip(timed, timed[1:]):
             gap = (cur.timestamp - prev.timestamp).total_seconds()

@@ -14,3 +14,7 @@ cache/
 
 # Hook markers
 .dirty
+
+# Runtime state files
+daemon.pid
+daemon.sock
