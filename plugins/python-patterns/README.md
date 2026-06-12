@@ -1,14 +1,14 @@
 # python-patterns — Claude Code plugin
 
-[![Patterns](https://img.shields.io/badge/patterns-35-blue)](#pattern-catalog)
+[![Patterns](https://img.shields.io/badge/patterns-38-blue)](#pattern-catalog)
 [![Source](https://img.shields.io/badge/source-faif%2Fpython--patterns-success)](https://github.com/faif/python-patterns)
 [![License](https://img.shields.io/badge/license-MIT-lightgrey)](#license)
 
 A Claude Code plugin that gives the agent on-demand expertise in classical Gang-of-Four
 and Python-specific design patterns, distilled from
-[faif/python-patterns](https://github.com/faif/python-patterns) (42k+ stars). Covers 35
-patterns across creational, structural, behavioral, testability, fundamental, and
-non-GoF categories. Optimized for three real workflows: writing new code, refactoring
+[faif/python-patterns](https://github.com/faif/python-patterns) (42k+ stars). Covers 38
+patterns across creational (7), structural (10), behavioral (16), testability (1),
+fundamental (1), and non-GoF (3) categories. Optimized for three real workflows: writing new code, refactoring
 existing code, and reviewing pull requests.
 
 > **Pythonic first.** The plugin biases toward plain Python — first-class functions,
@@ -109,7 +109,7 @@ python-patterns/
         ├── anti-patterns.md           # Singleton / God Object / inheritance
         ├── creational/                # 7 files
         ├── structural/                # 10 files
-        ├── behavioral/                # 17 files
+        ├── behavioral/                # 16 files
         ├── testability/               # dependency_injection
         ├── fundamental/               # delegation_pattern
         └── other/                     # blackboard, graph_search, hsm
