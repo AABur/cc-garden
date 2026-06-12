@@ -74,23 +74,32 @@ class TestParseStatsCounts(unittest.TestCase):
         self.assertEqual(stats.user_tool_events, 2)
 
     def test_parse_stats_total_is_assistant_plus_user(self):
-        # total_parsed_events = raw_assistant_records + user_tool_events
+        # total_parsed_events = raw_assistant_records + user_tool_events + hook_events
         records = [
             _assistant_record("u1", "m1", "r1"),
             _assistant_record("u2", "m2", "r2"),
             _user_record("u3"),
         ]
         _sess, stats = jp.build_session_from_records("s1", records)
-        self.assertEqual(
-            stats.total_parsed_events,
-            stats.raw_assistant_records + stats.user_tool_events,
-        )
+        self.assertEqual(stats.total_parsed_events, 3)  # 2 assistant + 1 user, hook_events=0
 
     def test_parse_stats_hook_events_zero(self):
         # hook_events is 0 in Phase 2 Step 1 (hook parsing comes in Step 3)
         records = [_assistant_record("u1", "m1", "r1")]
         _sess, stats = jp.build_session_from_records("s1", records)
         self.assertEqual(stats.hook_events, 0)
+
+    def test_sidechain_count_is_raw_not_deduped(self):
+        """sidechain_assistant_records counts raw records (before dedup), matching raw_assistant_records semantics."""
+        # Two sidechain records with same dedup_key (one duplicate)
+        records = [
+            {"type": "assistant", "isSidechain": True, "message": {"id": "m1", "role": "assistant", "content": [], "usage": {"input_tokens": 10, "output_tokens": 5}}, "requestId": "r1"},
+            {"type": "assistant", "isSidechain": True, "message": {"id": "m1", "role": "assistant", "content": [], "usage": {"input_tokens": 10, "output_tokens": 5}}, "requestId": "r1"},  # duplicate
+        ]
+        _, stats = jp.build_session_from_records("s1", records)
+        self.assertEqual(stats.raw_assistant_records, 2)
+        self.assertEqual(stats.deduped_assistant_requests, 1)
+        self.assertEqual(stats.sidechain_assistant_records, 2)  # raw count, not deduped
 
 
 class TestParseSessionFileReturnsTuple(unittest.TestCase):

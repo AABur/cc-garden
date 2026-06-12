@@ -62,7 +62,6 @@ class Session:
 
     @property
     def deduped_turn_count(self) -> int:
-        # Derived from turns so it can never drift out of sync with the list.
         return len(self.turns)
 
     @property
@@ -182,7 +181,7 @@ def build_session_from_records(session_id: str, records: list) -> tuple:
             if sess.last_timestamp is None or turn.timestamp > sess.last_timestamp:
                 sess.last_timestamp = turn.timestamp
     stats.duplicates_removed = stats.raw_assistant_records - stats.deduped_assistant_requests
-    stats.total_parsed_events = stats.raw_assistant_records + stats.user_tool_events
+    stats.total_parsed_events = stats.raw_assistant_records + stats.user_tool_events + stats.hook_events
     return sess, stats
 
 
