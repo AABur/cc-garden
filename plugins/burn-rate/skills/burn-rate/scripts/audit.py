@@ -21,7 +21,7 @@ from detectors import DETECTOR_MODULES
 
 def run_audit(days: int = 7) -> dict:
     ccusage_data, ccusage_error = ccusage.run_daily(days=days)
-    sessions, parser_errors = jsonl_parser.parse_all(since_days=days)
+    sessions, _causal_events, parse_stats, parser_errors = jsonl_parser.parse_all(since_days=days)
     config = config_inspector.build_snapshot()
 
     leaks, detector_errors = [], []
@@ -45,6 +45,21 @@ def run_audit(days: int = 7) -> dict:
         for m, c in s.models_used.items():
             model_mix[m] = model_mix.get(m, 0) + c
 
+    accounting_basis = {
+        "primary": "local_deduped_transcript_usage",
+        "raw_assistant_records": parse_stats.raw_assistant_records,
+        "deduped_assistant_requests": parse_stats.deduped_assistant_requests,
+        "duplicates_removed": parse_stats.duplicates_removed,
+        "sidechain_records": parse_stats.sidechain_assistant_records,
+        "user_tool_events": parse_stats.user_tool_events,
+        "hook_events": parse_stats.hook_events,
+        "total_parsed_events": parse_stats.total_parsed_events,
+        "note": (
+            "Spend calculations use deduplicated assistant usage records. "
+            "Workflow diagnostics use the event stream."
+        ),
+    }
+
     return {
         "summary": {
             "window_days": days,
@@ -60,6 +75,7 @@ def run_audit(days: int = 7) -> dict:
         },
         "ccusage": ccusage_data,
         "ccusage_error": ccusage_error,
+        "accounting_basis": accounting_basis,
         "parser_errors": parser_errors,
         "detector_errors": detector_errors,
         "bottlenecks": bottlenecks,

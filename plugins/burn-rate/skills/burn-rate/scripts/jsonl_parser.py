@@ -70,6 +70,17 @@ class Session:
         return Path(self.cwd).name if self.cwd else "unknown"
 
 
+@dataclass
+class ParseStats:
+    raw_assistant_records: int = 0
+    deduped_assistant_requests: int = 0
+    duplicates_removed: int = 0
+    sidechain_assistant_records: int = 0
+    user_tool_events: int = 0
+    hook_events: int = 0
+    total_parsed_events: int = 0
+
+
 def _ts(s):
     if not s:
         return None
@@ -131,16 +142,28 @@ def parse_turn(raw: dict) -> Optional[Turn]:
     )
 
 
-def build_session_from_records(session_id: str, records: list) -> Session:
+def build_session_from_records(session_id: str, records: list) -> tuple:
+    """Return (session, stats) where stats is a ParseStats populated from records."""
     sess = Session(session_id=session_id)
+    stats = ParseStats()
     seen = set()
     for raw in records:
+        rec_type = raw.get("type")
+        if rec_type == "user":
+            stats.user_tool_events += 1
+            continue
+        if rec_type != "assistant":
+            continue
+        stats.raw_assistant_records += 1
+        if bool(raw.get("isSidechain", False)):
+            stats.sidechain_assistant_records += 1
         turn = parse_turn(raw)
         if turn is None:
             continue
         if turn.dedup_key in seen:
             continue
         seen.add(turn.dedup_key)
+        stats.deduped_assistant_requests += 1
         if not sess.cwd and turn.cwd:
             sess.cwd = turn.cwd
         sess.turns.append(turn)
@@ -158,13 +181,18 @@ def build_session_from_records(session_id: str, records: list) -> Session:
                 sess.first_timestamp = turn.timestamp
             if sess.last_timestamp is None or turn.timestamp > sess.last_timestamp:
                 sess.last_timestamp = turn.timestamp
-    return sess
+    stats.duplicates_removed = stats.raw_assistant_records - stats.deduped_assistant_requests
+    stats.total_parsed_events = stats.raw_assistant_records + stats.user_tool_events
+    return sess, stats
 
 
 def parse_session_file(path: Path, since: Optional[datetime]) -> tuple:
-    """Return (session, bad_lines) where bad_lines counts JSON lines that failed
-    to parse — surfaced upstream so a partially-corrupt transcript is not silently
-    counted as complete."""
+    """Return (session, stats, bad_lines).
+
+    bad_lines counts JSON lines that failed to parse — surfaced upstream so a
+    partially-corrupt transcript is not silently counted as complete.
+    stats is a ParseStats populated from the records in this file.
+    """
     records = []
     bad_lines = 0
     with path.open("r", encoding="utf-8", errors="replace") as f:
@@ -185,25 +213,38 @@ def parse_session_file(path: Path, since: Optional[datetime]) -> tuple:
                 if not ts or ts < since:
                     continue
             records.append(raw)
-    sess = build_session_from_records(path.stem, records)
-    return sess, bad_lines
+    sess, stats = build_session_from_records(path.stem, records)
+    return sess, stats, bad_lines
 
 
 def parse_all(projects_dir: Path = Path.home() / ".claude" / "projects",
               since_days: int = 7) -> tuple:
-    """Return (sessions, errors). `errors` lists transcripts that were skipped or
-    partially unreadable, so the audit can surface that its numbers were computed
-    over an incomplete dataset rather than reporting silently truncated totals."""
+    """Return (sessions, causal_events, stats, errors).
+
+    causal_events is a placeholder list (populated in a later step).
+    stats is an aggregate ParseStats summed across all files.
+    errors lists transcripts that were skipped or partially unreadable, so the
+    audit can surface that its numbers were computed over an incomplete dataset
+    rather than reporting silently truncated totals.
+    """
     if not projects_dir.exists():
-        return [], []
+        return [], [], ParseStats(), []
     since = datetime.now(timezone.utc) - timedelta(days=since_days)
     cutoff = since.timestamp()
     sessions, errors = [], []
+    aggregate = ParseStats()
     for p in projects_dir.rglob("*.jsonl"):
         try:
             if p.stat().st_mtime < cutoff:
                 continue
-            sess, bad_lines = parse_session_file(p, since=since)
+            sess, stats, bad_lines = parse_session_file(p, since=since)
+            aggregate.raw_assistant_records += stats.raw_assistant_records
+            aggregate.deduped_assistant_requests += stats.deduped_assistant_requests
+            aggregate.duplicates_removed += stats.duplicates_removed
+            aggregate.sidechain_assistant_records += stats.sidechain_assistant_records
+            aggregate.user_tool_events += stats.user_tool_events
+            aggregate.hook_events += stats.hook_events
+            aggregate.total_parsed_events += stats.total_parsed_events
             if bad_lines:
                 errors.append(f"{p.name}: {bad_lines} unparseable line(s)")
             if sess.deduped_turn_count > 0:
@@ -215,4 +256,4 @@ def parse_all(projects_dir: Path = Path.home() / ".claude" / "projects",
             # A bug in parsing must not abort the audit, but must be surfaced —
             # not blanket-swallowed — so wrong totals don't look complete.
             errors.append(f"{p.name}: {type(e).__name__}: {e}")
-    return sessions, errors
+    return sessions, [], aggregate, errors

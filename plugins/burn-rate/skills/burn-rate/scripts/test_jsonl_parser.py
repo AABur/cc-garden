@@ -49,7 +49,7 @@ class TestParser(unittest.TestCase):
         lines = [_assistant_line("u1", "m1", "r1", out=10),
                  _assistant_line("u2", "m1", "r1", out=10),
                  _assistant_line("u3", "m2", "r2", out=10)]
-        sess = jp.build_session_from_records("s1", lines)
+        sess, _stats = jp.build_session_from_records("s1", lines)
         self.assertEqual(sess.total_usage.output_tokens, 20)  # 2 unique, not 3
         self.assertEqual(sess.deduped_turn_count, 2)
 
@@ -95,7 +95,7 @@ class TestParser(unittest.TestCase):
             p = Path(d) / "s1.jsonl"
             p.write_text("\n".join(_json.dumps(r) for r in (old, new)), encoding="utf-8")
             since = datetime(2026, 6, 1, tzinfo=timezone.utc)
-            sess, bad = jp.parse_session_file(p, since=since)
+            sess, _stats, bad = jp.parse_session_file(p, since=since)
         self.assertEqual(bad, 0)
         self.assertEqual(sess.deduped_turn_count, 1)
         self.assertEqual(sess.total_usage.output_tokens, 20)
@@ -108,7 +108,7 @@ class TestParser(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "s1.jsonl"
             p.write_text(good + "\n{not valid json\n", encoding="utf-8")
-            sess, bad = jp.parse_session_file(p, since=None)
+            sess, _stats, bad = jp.parse_session_file(p, since=None)
         self.assertEqual(bad, 1)
         self.assertEqual(sess.deduped_turn_count, 1)
 
@@ -122,7 +122,7 @@ class TestParser(unittest.TestCase):
         with tempfile.TemporaryDirectory() as d:
             p = Path(d) / "s1.jsonl"
             p.write_text(good + "\n" + array_line + "\n", encoding="utf-8")
-            sess, bad = jp.parse_session_file(p, since=None)
+            sess, _stats, bad = jp.parse_session_file(p, since=None)
         self.assertEqual(bad, 1)
         self.assertEqual(sess.deduped_turn_count, 1)
 

@@ -9,11 +9,16 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
 import audit  # noqa: E402
+import jsonl_parser as jp  # noqa: E402
+
+
+def _empty_stats():
+    return jp.ParseStats()
 
 
 class TestAudit(unittest.TestCase):
     def test_run_audit_shape(self):
-        with mock.patch("audit.jsonl_parser.parse_all", return_value=([], [])), \
+        with mock.patch("audit.jsonl_parser.parse_all", return_value=([], [], _empty_stats(), [])), \
              mock.patch("audit.ccusage.run_daily", return_value=(None, "ccusage skipped")), \
              mock.patch("audit.config_inspector.build_snapshot",
                         return_value=mock.Mock(tool_search_enabled=True, tool_search_mode="default",
@@ -28,7 +33,7 @@ class TestAudit(unittest.TestCase):
 
     def test_parser_errors_surface_in_output(self):
         errors = ["foo.jsonl: 3 unparseable line(s)", "bar.jsonl: PermissionError"]
-        with mock.patch("audit.jsonl_parser.parse_all", return_value=([], errors)), \
+        with mock.patch("audit.jsonl_parser.parse_all", return_value=([], [], _empty_stats(), errors)), \
              mock.patch("audit.ccusage.run_daily", return_value=(None, "ccusage skipped")), \
              mock.patch("audit.config_inspector.build_snapshot",
                         return_value=mock.Mock(tool_search_enabled=True, tool_search_mode="default",
