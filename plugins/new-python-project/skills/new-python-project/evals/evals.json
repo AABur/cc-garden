@@ -1,0 +1,32 @@
+{
+  "skill_name": "new-python-project",
+  "_note": "Task-level evals for an OUTWARD-FACING, side-effecting skill. Running these for real creates a GitHub repository, runs git/gh, and writes files to disk. DO NOT auto-run them through the skill-creator harness against a live account. To execute: use a throwaway GitHub namespace and a temp directory, or stub the gh/git steps. The expectations describe the scaffold a correct run must produce.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Start a brand-new Python project called widget-parser using our standard tooling. It's a small CLI library.",
+      "expected_output": "The skill scaffolds a new project directory using the copier-astral template with uv, ruff, and pytest, sets up a private GitHub repo with branch protection and a feature-branch workflow, adds a project CLAUDE.md, and uses Google-style docstrings.",
+      "files": [],
+      "expectations": [
+        "Runs copier-astral via copier (e.g., `copier copy --trust gh:ritwiktiwari/copier-astral ./widget-parser`) rather than scaffolding files manually",
+        "Uses uv for dependency/environment management (e.g., `uv sync --dev` is used for install)",
+        "Configures ruff for lint/format and sets pydocstyle convention to Google (convention = \"google\")",
+        "Sets up pytest (pure pytest, no unittest) and uses `uv run pytest` as the test command",
+        "Creates a project-level CLAUDE.md from the provided template (references/conventions.md)",
+        "Creates a private GitHub repository (e.g., `gh repo create widget-parser --private ...`)",
+        "Enables branch protection on the default branch (e.g., `gh api .../branches/main/protection`)",
+        "Establishes a feature-branch workflow by instructing work on `feat/<name>` branches and merging via PR (no direct pushes to the default branch)"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I'm in an existing repo and want to add a caching layer. Set me up.",
+      "expected_output": "The skill does NOT trigger / declines, because this is work inside an existing project, not bootstrapping a new one. (Negative behavioral check: new-python-project is bootstrap-only.)",
+      "files": [],
+      "expectations": [
+        "The skill recognizes this is not a new-project bootstrap and does not scaffold a fresh project",
+        "No copier template is run and no new GitHub repository is created for this request"
+      ]
+    }
+  ]
+}

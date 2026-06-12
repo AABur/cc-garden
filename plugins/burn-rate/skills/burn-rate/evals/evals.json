@@ -1,0 +1,44 @@
+{
+  "skill_name": "burn-rate",
+  "_note": "Task-level evals: verify the skill runs the bundled audit (not a reimplementation), reports the non-additive accounting model correctly, and never mutates config. burn-rate is read-only, so these are safe to run with the skill-creator harness against real local transcripts.",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Audit my Claude Code token spend for the last week and tell me where my tokens are going. Skip the ccusage baseline — just use my local transcript data.",
+      "expected_output": "The skill runs the bundled audit (audit.py --skip-ccusage), then summarizes the largest cost surfaces from the local deduplicated transcript usage. It presents an opportunity ranking rather than a single summed 'total savings' number, and notes that ccusage was skipped.",
+      "files": [],
+      "expectations": [
+        "The skill runs the bundled audit script (python3 \"${CLAUDE_SKILL_DIR}/scripts/audit.py\") to produce the audit JSON",
+        "The audit is run with --skip-ccusage and reconciliation.status is reported as \"skipped\"",
+        "The output includes opportunity_ranking and total_savings.status == \"not_reported\" (non-additive ranking; do not sum overlapping scopes)",
+        "The output does not include a grand-total additive savings field such as total_weekly_savings_usd",
+        "Read-only diagnosis: no Edit/Write tool calls and no settings.json/CLAUDE.md (or other files) are modified"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "I keep hitting my weekly Claude Code limit. Which projects or workflows are burning the most tokens, and is anything running away on its own?",
+      "expected_output": "The skill attributes spend by project / skill / plugin / agent (bottlenecks), classifies high-volume projects as parallel workload rather than 'runaway', and only flags possible recurring automation when multiple scheduling signals align.",
+      "files": [],
+      "expectations": [
+        "The skill executed the bundled scripts/audit.py to gather attribution data",
+        "Spend is attributed by project and by skill/plugin/agent dimension (bottlenecks / attribution)",
+        "A high-volume project is described as a high-volume parallel workload, NOT labeled 'runaway' on session count alone",
+        "Any automation claim is hedged and tied to multiple aligned signals, not asserted from volume alone",
+        "No configuration files were edited or written"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Give me a quick read-only token audit of Claude Code. Do not change any of my settings or files — I only want a diagnosis.",
+      "expected_output": "The skill runs the audit, reports findings (model routing, cache, CLAUDE.md, causal diagnostics) with their basis, and makes zero modifications to any file or config.",
+      "files": [],
+      "expectations": [
+        "The skill executed the bundled scripts/audit.py",
+        "Findings are reported with their basis label (spend / causal / workload / mixed)",
+        "No Edit or Write tool calls were made; no settings.json, CLAUDE.md, or any other file was modified",
+        "The response makes clear it is a diagnosis only and applies no fixes automatically"
+      ]
+    }
+  ]
+}
