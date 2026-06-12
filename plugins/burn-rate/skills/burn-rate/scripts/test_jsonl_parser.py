@@ -112,6 +112,20 @@ class TestParser(unittest.TestCase):
         self.assertEqual(bad, 1)
         self.assertEqual(sess.deduped_turn_count, 1)
 
+    def test_session_file_non_dict_json_counted_as_bad(self):
+        # A line that is valid JSON but not a dict (e.g. an array) must be counted
+        # as bad and skipped — not crash into build_session_from_records.
+        import tempfile
+        import json as _json
+        good = _json.dumps(_assistant_line("u1", "m1", "r1"))
+        array_line = _json.dumps([1, 2, 3])
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "s1.jsonl"
+            p.write_text(good + "\n" + array_line + "\n", encoding="utf-8")
+            sess, bad = jp.parse_session_file(p, since=None)
+        self.assertEqual(bad, 1)
+        self.assertEqual(sess.deduped_turn_count, 1)
+
 
 if __name__ == "__main__":
     unittest.main()

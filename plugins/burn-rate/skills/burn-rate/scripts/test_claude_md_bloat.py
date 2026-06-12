@@ -6,7 +6,7 @@ from pathlib import Path
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE))
 
-from jsonl_parser import Session  # noqa: E402
+from jsonl_parser import Session, Turn, Usage  # noqa: E402
 import pricing  # noqa: E402
 from detectors import claude_md_bloat as cmb  # noqa: E402
 
@@ -37,6 +37,17 @@ class TestClaudeMdBloat(unittest.TestCase):
         # Exactly TARGET tokens is within budget (the guard is `<= TARGET`).
         cfg = FakeConfig({"/home/u/.claude/CLAUDE.md": cmb.TARGET})
         self.assertEqual(cmb.detect([Session(session_id="s")], cfg, pricing), [])
+
+    def test_weekly_tokens_multiplied_by_turns(self):
+        # CLAUDE.md is re-sent on every turn, so est_weekly_tokens = tokens × turns.
+        turn = Turn(uuid="u", message_id="m", request_id="r",
+                    session_id="s", cwd="/tmp", timestamp=None, model=None,
+                    usage=Usage())
+        sess = Session(session_id="s")
+        sess.turns = [turn] * 10  # 10 turns
+        cfg = FakeConfig({"/home/u/.claude/CLAUDE.md": 3000})
+        leaks = cmb.detect([sess], cfg, pricing)
+        self.assertEqual(leaks[0].est_weekly_tokens, 30_000)  # 3000 × 10
 
 
 if __name__ == "__main__":

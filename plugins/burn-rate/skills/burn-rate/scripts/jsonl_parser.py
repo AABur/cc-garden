@@ -77,9 +77,10 @@ def _ts(s):
         dt = datetime.fromisoformat(str(s).replace("Z", "+00:00"))
     except (ValueError, TypeError):
         return None
-    # Normalize to tz-aware UTC: transcripts without an offset would otherwise
-    # yield naive datetimes that raise TypeError when compared with the aware
-    # `since` cutoff, silently dropping the whole file.
+    # Make tz-aware: transcripts without an offset would otherwise yield naive
+    # datetimes that raise TypeError when compared with the aware `since` cutoff,
+    # silently dropping the whole file. Non-UTC offsets are left as-is; comparison
+    # against `since` (which is UTC-aware) works correctly for any tz-aware value.
     if dt.tzinfo is None:
         return dt.replace(tzinfo=timezone.utc)
     return dt
@@ -174,6 +175,9 @@ def parse_session_file(path: Path, since: Optional[datetime]) -> tuple:
             try:
                 raw = json.loads(line)
             except json.JSONDecodeError:
+                bad_lines += 1
+                continue
+            if not isinstance(raw, dict):
                 bad_lines += 1
                 continue
             if since is not None:
