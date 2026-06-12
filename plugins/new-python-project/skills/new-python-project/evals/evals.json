@@ -8,14 +8,14 @@
       "expected_output": "The skill scaffolds a new project directory using the copier-astral template with uv, ruff, and pytest, sets up a private GitHub repo with branch protection and a feature-branch workflow, adds a project CLAUDE.md, and uses Google-style docstrings.",
       "files": [],
       "expectations": [
-        "A new project directory named 'widget-parser' is created from the copier-astral template (not hand-rolled)",
-        "Dependency and environment management uses uv",
-        "ruff is configured for lint/format",
-        "Tests use pytest (pure pytest, no unittest)",
-        "Docstrings follow the Google style",
-        "A private GitHub repository is created with branch protection enabled",
-        "A feature-branch workflow is established (no direct commits to the default branch)",
-        "A project-level CLAUDE.md is created"
+        "Runs copier-astral via copier (e.g., `copier copy --trust gh:ritwiktiwari/copier-astral ./widget-parser`) rather than scaffolding files manually",
+        "Uses uv for dependency/environment management (e.g., `uv sync --dev` is used for install)",
+        "Configures ruff for lint/format and sets pydocstyle convention to Google (convention = \"google\")",
+        "Sets up pytest (pure pytest, no unittest) and uses `uv run pytest` as the test command",
+        "Creates a project-level CLAUDE.md from the provided template (references/conventions.md)",
+        "Creates a private GitHub repository (e.g., `gh repo create widget-parser --private ...`)",
+        "Enables branch protection on the default branch (e.g., `gh api .../branches/main/protection`)",
+        "Establishes a feature-branch workflow by instructing work on `feat/<name>` branches and merging via PR (no direct pushes to the default branch)"
       ]
     },
     {
