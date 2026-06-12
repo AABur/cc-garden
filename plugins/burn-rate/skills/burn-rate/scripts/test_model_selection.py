@@ -26,18 +26,18 @@ class TestModelSelection(unittest.TestCase):
 
     def test_flags_interactive_simple_opus(self):
         turns = [_opus(50) for _ in range(40)]
-        leaks = model_selection.detect([self._sess(turns)], None, pricing)
+        leaks = model_selection.detect([self._sess(turns)], [], None, pricing)
         self.assertEqual(len(leaks), 1)
         self.assertIn("40", leaks[0].title)
 
     def test_excludes_sidechain_and_bg(self):
         turns = [_opus(50, sidechain=True) for _ in range(40)] + [_opus(50, kind="bg") for _ in range(40)]
-        leaks = model_selection.detect([self._sess(turns)], None, pricing)
+        leaks = model_selection.detect([self._sess(turns)], [], None, pricing)
         self.assertEqual(leaks, [])
 
     def test_below_min_count_no_flag(self):
         turns = [_opus(50) for _ in range(5)]
-        self.assertEqual(model_selection.detect([self._sess(turns)], None, pricing), [])
+        self.assertEqual(model_selection.detect([self._sess(turns)], [], None, pricing), [])
 
 
 if __name__ == "__main__":

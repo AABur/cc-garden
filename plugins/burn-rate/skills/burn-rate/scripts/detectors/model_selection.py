@@ -11,7 +11,7 @@ OUTPUT_THRESHOLD = 1000
 MIN_TURNS = 30
 
 
-def detect(sessions, config, pricing) -> list:
+def detect(sessions, causal_events, config, pricing) -> list:
     simple = []
     for s in sessions:
         for t in s.turns:

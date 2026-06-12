@@ -10,7 +10,7 @@ ZONE = 400_000
 MIN_TURNS = 10
 
 
-def detect(sessions, config, pricing) -> list:
+def detect(sessions, causal_events, config, pricing) -> list:
     over = 0
     excess = 0
     peak = 0

@@ -7,7 +7,7 @@ TARGET = 2000
 CRITICAL = 5000
 
 
-def detect(sessions, config, pricing) -> list:
+def detect(sessions, causal_events, config, pricing) -> list:
     if config is None:
         return []
     total_turns = sum(s.deduped_turn_count for s in sessions)

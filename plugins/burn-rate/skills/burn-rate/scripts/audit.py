@@ -31,7 +31,7 @@ def run_audit(days: int = 7, skip_ccusage: bool = False, ccusage_timeout: int = 
     for mod_path in DETECTOR_MODULES:
         try:
             mod = importlib.import_module(mod_path)
-            leaks.extend(mod.detect(sessions, config, pricing))
+            leaks.extend(mod.detect(sessions, _causal_events, config, pricing))
         except Exception as e:
             detector_errors.append(f"{mod_path}: {type(e).__name__}: {e}")
     leaks.sort(key=lambda leak: leak.est_weekly_savings_usd, reverse=True)

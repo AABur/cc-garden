@@ -27,7 +27,7 @@ def _session_totals(s):
     return inp, cr, model, turns
 
 
-def detect(sessions, config, pricing) -> list:
+def detect(sessions, causal_events, config, pricing) -> list:
     flagged = []
     for s in sessions:
         inp, cr, model, turns = _session_totals(s)
