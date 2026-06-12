@@ -53,6 +53,18 @@ def _bash_event(session_id, command_head):
     )
 
 
+def _make_session(project, session_id, n_turns=1):
+    """Create a minimal Session with project name derived from cwd basename."""
+    turns = [_turn(session_id=session_id) for _ in range(n_turns)]
+    return _session(
+        session_id=session_id,
+        cwd=f"/tmp/{project}",
+        turns=turns,
+        first_ts=None,
+        last_ts=None,
+    )
+
+
 # ---------------------------------------------------------------------------
 # Build a set of sessions spanning many days with low session rate
 # ---------------------------------------------------------------------------
@@ -147,6 +159,8 @@ class TestWorkloadClassifier(unittest.TestCase):
         # Use 11 sessions spaced 1 hour apart → 11/((11-1)/24) ≈ 26.4 sessions/day > 10
         n = 11
         sessions = []
+        # 11 sessions starting at 23:00 UTC, spaced 1h apart → hours 23,0,1,...,9
+        # Hours 8 and 9 are on-hours; 9/11 = 81.8% off-hours > 80% threshold
         for i in range(n):
             ts = datetime(2026, 6, 1, 23, 0, tzinfo=timezone.utc) + timedelta(hours=i)
             turns = [_turn(
@@ -179,7 +193,18 @@ class TestWorkloadClassifier(unittest.TestCase):
         self.assertFalse(leak.additive)
         self.assertEqual(leak.est_weekly_savings_usd, 0.0)
 
-    # 6. Empty sessions list → no crash, returns []
+    # 6. No-timestamp fallback → no crash, single session does not trigger flag
+    def test_no_timestamps_does_not_crash(self):
+        """Sessions with no timestamps fall back to raw session count as sessions/day."""
+        sess = _make_session("proj", "s1", n_turns=5)
+        # No timestamps set — first_timestamp/last_timestamp remain None
+        sess.first_timestamp = None
+        sess.last_timestamp = None
+        # With 1 session and no timestamps: 1 session treated as 1 session/day → no flag
+        leaks = workload_classifier.detect([sess], [], None, None)
+        self.assertEqual(leaks, [])
+
+    # 7. Empty sessions list → no crash, returns []
     def test_no_sessions_no_crash(self):
         leaks = workload_classifier.detect([], [], None, pricing)
         self.assertEqual(leaks, [])

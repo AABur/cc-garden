@@ -17,7 +17,9 @@ def _sessions_per_day(sessions):
     """Return sessions/day for a project's session list (ignoring sessions without timestamps)."""
     timestamped = [s for s in sessions if s.first_timestamp is not None]
     if not timestamped:
-        return len(sessions)  # all sessions in 1 implicit day
+        # No timestamps available; treat all sessions as occurring within one day.
+        # This is a conservative upper bound — it may overcount but won't miss real spikes.
+        return len(sessions)
     first = min(s.first_timestamp for s in timestamped)
     last = max(s.first_timestamp for s in timestamped)
     days = max(1.0, (last - first).total_seconds() / 86400)
@@ -58,7 +60,7 @@ def _signal_repeated_command(sessions, causal_events):
     ]
     if not bash_events:
         return False
-    first_words = [e.command_head.split()[0] for e in bash_events if e.command_head.split()]
+    first_words = [e.command_head.split()[0] for e in bash_events]
     if not first_words:
         return False
     counts = Counter(first_words)
