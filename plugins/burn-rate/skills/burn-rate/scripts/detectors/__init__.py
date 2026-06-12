@@ -15,6 +15,7 @@ DETECTOR_MODULES = [
     "detectors.bash_antipatterns",
     "detectors.repeated_reads",
     "detectors.workload_classifier",
+    "detectors.config_description_tax",
 ]
 
 SEVERITIES = ("critical", "warning", "suggestion")
