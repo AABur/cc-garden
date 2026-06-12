@@ -1,6 +1,7 @@
 # detectors/workload_classifier.py
 """Classifies high-volume project activity; warns about automation only on multi-signal evidence."""
 from __future__ import annotations
+import statistics
 from collections import Counter
 from . import Leak
 
@@ -9,6 +10,30 @@ AUTOMATION_INTERVAL_TOLERANCE = 0.20  # modal interval ± 20%
 OFF_HOURS_THRESHOLD = 0.80            # 80% of sessions outside 08:00-22:00 UTC
 INTERACTIVE_SHARE_THRESHOLD = 0.10    # < 10% interactive turns = suspicious
 MIN_SESSIONS_FOR_AUTOMATION = 5       # need enough data for interval analysis
+_INTERVAL_BUCKET = 1800              # 30-minute modal bucket (seconds)
+
+ALL_SIGNAL_NAMES = (
+    "stable_interval", "repeated_command", "single_cwd",
+    "off_hours", "little_interactive",
+)
+
+
+def _inter_session_intervals(sessions):
+    """Return sorted-by-start inter-session intervals (seconds) for timestamped sessions.
+
+    Shared by the stable-interval signal and the cadence evidence so the two
+    never diverge. Empty if fewer than 2 timestamped sessions exist.
+    """
+    timestamped = sorted(
+        [s for s in sessions if s.first_timestamp is not None],
+        key=lambda s: s.first_timestamp,
+    )
+    if len(timestamped) < 2:
+        return []
+    return [
+        (timestamped[i + 1].first_timestamp - timestamped[i].first_timestamp).total_seconds()
+        for i in range(len(timestamped) - 1)
+    ]
 
 
 def _sessions_per_day(sessions):
@@ -24,25 +49,27 @@ def _sessions_per_day(sessions):
     return len(sessions) / days
 
 
+def _modal_interval(intervals):
+    """Return the modal 30-minute-bucketed interval (seconds), or None if unavailable.
+
+    Returns None when there are no intervals or the modal bucket is 0 (sessions
+    clustered at the same instant), which carries no cadence information.
+    """
+    if not intervals:
+        return None
+    bucketed = [round(iv / _INTERVAL_BUCKET) * _INTERVAL_BUCKET for iv in intervals]
+    modal_bucket = Counter(bucketed).most_common(1)[0][0]
+    if modal_bucket == 0:
+        return None
+    return modal_bucket
+
+
 def _signal_stable_interval(sessions):
     """True if >= 50% of inter-session intervals fall within modal ± 20%."""
-    timestamped = sorted(
-        [s for s in sessions if s.first_timestamp is not None],
-        key=lambda s: s.first_timestamp,
-    )
-    if len(timestamped) < 2:
+    intervals = _inter_session_intervals(sessions)
+    modal_bucket = _modal_interval(intervals)
+    if modal_bucket is None:
         return False
-    intervals = [
-        (timestamped[i + 1].first_timestamp - timestamped[i].first_timestamp).total_seconds()
-        for i in range(len(timestamped) - 1)
-    ]
-    # Round each interval to nearest 30-minute bucket (1800 seconds).
-    BUCKET = 1800
-    bucketed = [round(iv / BUCKET) * BUCKET for iv in intervals]
-    counts = Counter(bucketed)
-    modal_bucket, modal_count = counts.most_common(1)[0]
-    if modal_bucket == 0:
-        return False  # degenerate case — sessions at same time
     lo = modal_bucket * (1 - AUTOMATION_INTERVAL_TOLERANCE)
     hi = modal_bucket * (1 + AUTOMATION_INTERVAL_TOLERANCE)
     qualifying = sum(1 for iv in intervals if lo <= iv <= hi)
@@ -84,8 +111,8 @@ def _signal_off_hours(sessions):
     return off / len(timestamped) > OFF_HOURS_THRESHOLD
 
 
-def _signal_little_interactive(sessions):
-    """True if < INTERACTIVE_SHARE_THRESHOLD of turns are interactive (not bg, not sidechain)."""
+def _interactive_share(sessions):
+    """Return fraction of turns that are interactive (not bg, not sidechain), 0..1."""
     total = 0
     interactive = 0
     for s in sessions:
@@ -93,9 +120,15 @@ def _signal_little_interactive(sessions):
             total += 1
             if t.session_kind != "bg" and not t.is_sidechain:
                 interactive += 1
+    return interactive / total if total else 0.0
+
+
+def _signal_little_interactive(sessions):
+    """True if < INTERACTIVE_SHARE_THRESHOLD of turns are interactive (not bg, not sidechain)."""
+    total = sum(len(s.turns) for s in sessions)
     if total == 0:
         return False
-    return interactive / total < INTERACTIVE_SHARE_THRESHOLD
+    return _interactive_share(sessions) < INTERACTIVE_SHARE_THRESHOLD
 
 
 def _compute_automation_signals(sessions, causal_events):
@@ -148,6 +181,98 @@ def _sidechain_share(sessions):
     return sidechain / total if total else 0.0
 
 
+def _off_hours_share(sessions):
+    """Return fraction of timestamped sessions starting outside 08:00-22:00 UTC, 0..1.
+
+    Mirrors the _signal_off_hours boundary (hour >= 22 or hour < 8). Returns 0.0
+    when no session is timestamped.
+    """
+    timestamped = [s for s in sessions if s.first_timestamp is not None]
+    if not timestamped:
+        return 0.0
+    off = sum(
+        1 for s in timestamped
+        if s.first_timestamp.hour >= 22 or s.first_timestamp.hour < 8
+    )
+    return off / len(timestamped)
+
+
+def _interval_cv(intervals):
+    """Return coefficient of variation (stddev/mean) as a 0..100 percentage, or None.
+
+    Unavailable (None) when there are fewer than 2 intervals or the mean is 0.
+    """
+    if len(intervals) < 2:
+        return None
+    mean = statistics.mean(intervals)
+    if mean == 0:
+        return None
+    return statistics.pstdev(intervals) / mean * 100
+
+
+def _session_tokens(session):
+    """Sum token buckets for a single session (session total plus per-turn usage).
+
+    Per-turn usage is summed so fixtures that only populate Turn.usage still yield
+    a meaningful ranking, while real sessions also reflect their rolled-up total.
+    """
+    total = 0
+    u = session.total_usage
+    if u is not None:
+        total += (u.input_tokens + u.output_tokens
+                  + u.cache_read_tokens + u.cache_write_5m_tokens
+                  + u.cache_write_1h_tokens)
+    for t in session.turns:
+        tu = t.usage
+        if tu is not None:
+            total += (tu.input_tokens + tu.output_tokens
+                      + tu.cache_read_tokens + tu.cache_write_5m_tokens
+                      + tu.cache_write_1h_tokens)
+    return total
+
+
+def _top_sessions_by_tokens(sessions, limit=2):
+    """Return up to `limit` (session_id, tokens) pairs ranked by token total desc."""
+    ranked = sorted(
+        ((s.session_id, _session_tokens(s)) for s in sessions),
+        key=lambda pair: pair[1],
+        reverse=True,
+    )
+    return ranked[:limit]
+
+
+def cadence_evidence(proj_sessions):
+    """Build human-readable cadence bullets shown on BOTH workload leak branches.
+
+    Surfaces the underlying cadence data (modal interval, CV, off-hours, interactive
+    and sidechain shares, top token sessions) so the user judges legitimate batch
+    vs runaway — the classifier never asserts that on volume alone.
+    """
+    bullets = []
+
+    intervals = _inter_session_intervals(proj_sessions)
+    modal = _modal_interval(intervals)
+    cv = _interval_cv(intervals)
+    if modal is None or cv is None:
+        bullets.append("Cadence: modal interval unavailable (<2 sessions)")
+    else:
+        bullets.append(f"Cadence: modal interval ~{modal:.0f}s (CV {cv:.0f}%)")
+
+    off_pct = _off_hours_share(proj_sessions) * 100
+    bullets.append(f"Off-hours: {off_pct:.0f}% (outside 08:00-22:00 UTC)")
+
+    interactive_pct = _interactive_share(proj_sessions) * 100
+    bullets.append(f"Interactive share: {interactive_pct:.0f}%")
+
+    sc_share = _sidechain_share(proj_sessions)
+    bullets.append(f"Sidechain share: {sc_share:.0%}")
+
+    for sid, tokens in _top_sessions_by_tokens(proj_sessions):
+        bullets.append(f"Top session by tokens: {sid[:8]} ({tokens:,} tok)")
+
+    return bullets
+
+
 def detect(sessions, causal_events, config, pricing) -> list[Leak]:
     if not sessions:
         return []
@@ -166,11 +291,12 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
 
         signals = _compute_automation_signals(proj_sessions, causal_events)
         active_signals = [name for name, val in signals if val]
+        absent_signals = [name for name in ALL_SIGNAL_NAMES if name not in active_signals]
         all_triggered = len(active_signals) == 5
         session_count = len(proj_sessions)
         tokens = _total_tokens(proj_sessions)
         mix = _model_mix_str(proj_sessions)
-        sc_share = _sidechain_share(proj_sessions)
+        cadence = cadence_evidence(proj_sessions)
 
         if all_triggered and session_count >= MIN_SESSIONS_FOR_AUTOMATION:
             leaks.append(Leak(
@@ -185,6 +311,7 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
                     f"Project: {project}",
                     f"Sessions/day: {rate:.1f}",
                     f"Automation signals triggered: {', '.join(active_signals)}",
+                    *cadence,
                 ],
                 est_weekly_tokens=tokens,
                 est_weekly_cost_usd=0.0,
@@ -194,6 +321,7 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
                 ),
             ))
         else:
+            absent_str = ", ".join(absent_signals) if absent_signals else "none"
             leaks.append(Leak(
                 id="workload:high_volume_parallel_workload",
                 title=f"High-volume parallel workload in project '{project}'",
@@ -206,14 +334,21 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
                     f"Project: {project}",
                     f"Sessions/day: {rate:.1f}",
                     f"Model mix: {mix}",
-                    f"Sidechain share: {sc_share:.0%}",
-                    "No conclusive automation evidence"
-                    f" ({len(active_signals)}/5 signals triggered)",
+                    *cadence,
+                    f"High-volume parallel workload, cadence shown above"
+                    f" ({len(active_signals)}/5 automation signals triggered).",
+                    f"NOT flagged as scheduled automation: absent signals are {absent_str}.",
                 ],
                 est_weekly_tokens=tokens,
                 est_weekly_cost_usd=0.0,
                 est_weekly_savings_usd=0.0,
                 fix_action="No action needed unless cost is unexpectedly high",
+                suggested_action=(
+                    "If this is an unattended batch job, consider routing it to a local "
+                    "model (e.g. Ollama) so it does not consume subscription headroom — "
+                    "validate output quality on a parallel run first. This is a routing "
+                    "suggestion, not a detected leak; no token/cost savings are claimed."
+                ),
             ))
 
     return leaks

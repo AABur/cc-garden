@@ -209,6 +209,111 @@ class TestWorkloadClassifier(unittest.TestCase):
         leaks = workload_classifier.detect([], [], None, pricing)
         self.assertEqual(leaks, [])
 
+    # -----------------------------------------------------------------------
+    # Cadence evidence (Step 3) + suggested_action (Step 6)
+    # -----------------------------------------------------------------------
+
+    def _automation_sessions(self):
+        """Build sessions that trip all 5 automation signals (mirrors test #4)."""
+        n = 11
+        sessions = []
+        for i in range(n):
+            ts = datetime(2026, 6, 1, 23, 0, tzinfo=timezone.utc) + timedelta(hours=i)
+            turns = [_turn(
+                session_id=f"s{i}",
+                timestamp=ts,
+                is_sidechain=False,
+                session_kind="bg",
+            )]
+            sessions.append(_session(
+                session_id=f"s{i}",
+                cwd="/tmp/myproject",
+                turns=turns,
+                first_ts=ts,
+                last_ts=ts,
+            ))
+        causal_events = [_bash_event(f"s{i}", "pytest tests/") for i in range(n)]
+        return sessions, causal_events
+
+    def _bullet_prefixes(self, evidence):
+        return [str(line) for line in evidence]
+
+    # 8. high_volume leak carries cadence bullets
+    def test_high_volume_has_cadence_evidence(self):
+        sessions = _high_volume_sessions(n=15, interval_hours=None)
+        leaks = workload_classifier.detect(sessions, [], None, pricing)
+        leak = leaks[0]
+        self.assertEqual(leak.id, "workload:high_volume_parallel_workload")
+        lines = self._bullet_prefixes(leak.evidence)
+        self.assertTrue(any(l.startswith("Cadence:") for l in lines))
+        self.assertTrue(any(l.startswith("Off-hours:") for l in lines))
+        self.assertTrue(any(l.startswith("Interactive share:") for l in lines))
+
+    # 9. automation leak ALSO carries cadence bullets
+    def test_automation_has_cadence_evidence(self):
+        sessions, causal_events = self._automation_sessions()
+        leaks = workload_classifier.detect(sessions, causal_events, None, pricing)
+        leak = leaks[0]
+        self.assertEqual(leak.id, "workload:possible_recurring_automation")
+        lines = self._bullet_prefixes(leak.evidence)
+        self.assertTrue(any(l.startswith("Cadence:") for l in lines))
+        self.assertTrue(any(l.startswith("Off-hours:") for l in lines))
+        self.assertTrue(any(l.startswith("Interactive share:") for l in lines))
+
+    # 10. suggested_action present on high_volume, empty on automation
+    def test_suggested_action_only_on_high_volume(self):
+        hv_sessions = _high_volume_sessions(n=15, interval_hours=None)
+        hv_leak = workload_classifier.detect(hv_sessions, [], None, pricing)[0]
+        self.assertEqual(hv_leak.id, "workload:high_volume_parallel_workload")
+        self.assertNotEqual(hv_leak.suggested_action, "")
+        lowered = hv_leak.suggested_action.lower()
+        self.assertTrue("ollama" in lowered or "local model" in lowered)
+
+        auto_sessions, causal_events = self._automation_sessions()
+        auto_leak = workload_classifier.detect(auto_sessions, causal_events, None, pricing)[0]
+        self.assertEqual(auto_leak.id, "workload:possible_recurring_automation")
+        self.assertEqual(auto_leak.suggested_action, "")
+
+    # 11. high_volume text names which signals are absent
+    def test_high_volume_names_absent_signals(self):
+        sessions = _high_volume_sessions(n=15, interval_hours=None)
+        leak = workload_classifier.detect(sessions, [], None, pricing)[0]
+        joined = " ".join(str(l) for l in leak.evidence).lower()
+        self.assertIn("not", joined)
+        self.assertIn("automation", joined)
+        # absent signal names should be listed
+        self.assertTrue(
+            any(name in joined for name in
+                ("stable_interval", "repeated_command", "off_hours",
+                 "little_interactive", "single_cwd"))
+        )
+
+    # 12. modal-interval-unavailable path (no timestamps) still emits + reports N/A
+    def test_modal_interval_unavailable_path(self):
+        # 12 sessions, no timestamps → _sessions_per_day upper-bound = 12 > 10.
+        sessions = []
+        for i in range(12):
+            turns = [_turn(session_id=f"s{i}")]
+            sessions.append(_session(
+                session_id=f"s{i}",
+                cwd="/tmp/myproject",
+                turns=turns,
+                first_ts=None,
+                last_ts=None,
+            ))
+        leaks = workload_classifier.detect(sessions, [], None, pricing)
+        self.assertEqual(len(leaks), 1)
+        leak = leaks[0]
+        lines = self._bullet_prefixes(leak.evidence)
+        cadence = next(l for l in lines if l.startswith("Cadence:"))
+        self.assertIn("unavailable", cadence)
+
+    # 13. est_weekly_savings_usd stays 0.0 on high_volume (suggestion is not priced)
+    def test_high_volume_savings_zero(self):
+        sessions = _high_volume_sessions(n=15, interval_hours=None)
+        leak = workload_classifier.detect(sessions, [], None, pricing)[0]
+        self.assertEqual(leak.est_weekly_savings_usd, 0.0)
+
 
 if __name__ == "__main__":
     unittest.main()

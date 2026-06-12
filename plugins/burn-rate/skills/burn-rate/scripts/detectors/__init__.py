@@ -34,6 +34,7 @@ class Leak:
     est_weekly_cost_usd: float = 0.0
     est_weekly_savings_usd: float = 0.0
     fix_action: str = ""
+    suggested_action: str = ""
 
     def __post_init__(self):
         # Enforce the severity contract at construction so a typo in a detector
