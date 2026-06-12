@@ -23,6 +23,7 @@ def detect(sessions, causal_events, config, pricing) -> list:
             id=f"claude_md:bloat:{path}",
             title=f"CLAUDE.md over target (~{tokens:,} tokens)",
             severity=severity, category="claude_md",
+            basis="mixed", overlap_group="prompt_tax", additive=False,
             evidence=[f"{path}: ~{tokens:,} tokens (target ~{TARGET}, cited but not re-confirmed for 2026)",
                       f"~{weekly:,} tokens/week ({tokens:,} × {total_turns} turns)",
                       "Non-English structural content tokenizes 2-3x heavier — keep rules in English"],

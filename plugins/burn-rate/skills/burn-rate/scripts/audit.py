@@ -18,6 +18,9 @@ import pricing
 import attribution
 from detectors import DETECTOR_MODULES
 
+# Resolve detector modules at import time so tests can patch audit._DETECTOR_MODULES.
+_DETECTOR_MODULES = [importlib.import_module(mod) for mod in DETECTOR_MODULES]
+
 
 def run_audit(days: int = 7, skip_ccusage: bool = False, ccusage_timeout: int = 25) -> dict:
     if skip_ccusage:
@@ -28,12 +31,11 @@ def run_audit(days: int = 7, skip_ccusage: bool = False, ccusage_timeout: int = 
     config = config_inspector.build_snapshot()
 
     leaks, detector_errors = [], []
-    for mod_path in DETECTOR_MODULES:
+    for mod in _DETECTOR_MODULES:
         try:
-            mod = importlib.import_module(mod_path)
             leaks.extend(mod.detect(sessions, _causal_events, config, pricing))
         except Exception as e:
-            detector_errors.append(f"{mod_path}: {type(e).__name__}: {e}")
+            detector_errors.append(f"{mod.__name__}: {type(e).__name__}: {e}")
     leaks.sort(key=lambda leak: leak.est_weekly_savings_usd, reverse=True)
 
     bottlenecks = {
@@ -90,7 +92,24 @@ def run_audit(days: int = 7, skip_ccusage: bool = False, ccusage_timeout: int = 
         "detector_errors": detector_errors,
         "bottlenecks": bottlenecks,
         "leaks": [asdict(leak) if is_dataclass(leak) else leak for leak in leaks],
-        "total_weekly_savings_usd": round(sum(leak.est_weekly_savings_usd for leak in leaks), 2),
+        "opportunity_ranking": sorted(
+            [
+                {
+                    "id": leak.id,
+                    "rank_signal_tokens": leak.est_weekly_tokens,
+                    "rank_signal_cost_usd": leak.est_weekly_cost_usd,
+                    "additive": leak.additive,
+                    "overlap_group": leak.overlap_group,
+                }
+                for leak in leaks
+            ],
+            key=lambda x: x["rank_signal_cost_usd"],
+            reverse=True,
+        ),
+        "total_savings": {
+            "status": "not_reported",
+            "reason": "detector scopes overlap; summing them would overstate recoverable spend",
+        },
         "pricing_snapshot_date": pricing.SNAPSHOT_DATE,
     }
 

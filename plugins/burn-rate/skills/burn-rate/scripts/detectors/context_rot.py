@@ -29,6 +29,7 @@ def detect(sessions, causal_events, config, pricing) -> list:
         id="context:rot_zone",
         title=f"{over} turns past the {ZONE // 1000}k context-rot zone",
         severity="warning", category="context",
+        basis="spend", overlap_group="context", additive=False,
         evidence=[f"{over} turns over {ZONE // 1000}k context (peak {peak // 1000}k)",
                   f"~{excess:,} excess tokens re-fed past the threshold",
                   "Thariq (Anthropic): the model is least intelligent when compacting late"],

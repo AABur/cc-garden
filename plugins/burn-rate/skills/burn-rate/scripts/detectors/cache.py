@@ -52,6 +52,7 @@ def detect(sessions, causal_events, config, pricing) -> list:
         id="cache:low_hit_ratio",
         title=f"{len(flagged)} sessions with low cache-hit ratio",
         severity="warning", category="cache",
+        basis="spend", overlap_group="cache_efficiency", additive=False,
         evidence=[f"{s.project}/{s.session_id[:8]}: hit ratio {r:.0%}, input {inp:,}"
                   for s, r, inp in worst],
         est_weekly_tokens=total_input,
