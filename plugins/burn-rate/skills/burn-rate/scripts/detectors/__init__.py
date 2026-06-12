@@ -1,6 +1,6 @@
 # detectors/__init__.py
 """Leak dataclass + detector registry. Each detector module exposes
-`detect(sessions, config, pricing_mod) -> list[Leak]`."""
+`detect(sessions, causal_events, config, pricing_mod) -> list[Leak]`."""
 from __future__ import annotations
 from dataclasses import dataclass, field
 
@@ -20,6 +20,9 @@ class Leak:
     title: str
     severity: str
     category: str
+    basis: str = "spend"       # "spend", "causal", "workload", "mixed"
+    additive: bool = False
+    overlap_group: str = ""
     evidence: list = field(default_factory=list)
     est_weekly_tokens: int = 0
     est_weekly_cost_usd: float = 0.0
