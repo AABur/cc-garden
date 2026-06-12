@@ -38,7 +38,7 @@ def detect(sessions, causal_events, config, pricing) -> list[Leak]:
         evidence=[
             f"{len(by_session)} sessions with tool_result events",
             f"Average tool output per session: {avg:,.0f} chars",
-        ] + [f"  {sid[:8]}: {size:,} chars" for sid, size in top3],
+        ] + [f"{sid[:8]}: {size:,} chars" for sid, size in top3],
         est_weekly_tokens=est_tokens,
         est_weekly_cost_usd=0.0,
         est_weekly_savings_usd=0.0,
