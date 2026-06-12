@@ -19,8 +19,11 @@ import attribution
 from detectors import DETECTOR_MODULES
 
 
-def run_audit(days: int = 7) -> dict:
-    ccusage_data, ccusage_error = ccusage.run_daily(days=days)
+def run_audit(days: int = 7, skip_ccusage: bool = False, ccusage_timeout: int = 25) -> dict:
+    if skip_ccusage:
+        ccusage_data, ccusage_error = None, "skipped"
+    else:
+        ccusage_data, ccusage_error = ccusage.run_daily(days=days, timeout=ccusage_timeout)
     sessions, _causal_events, parse_stats, parser_errors = jsonl_parser.parse_all(since_days=days)
     config = config_inspector.build_snapshot()
 
@@ -60,6 +63,12 @@ def run_audit(days: int = 7) -> dict:
         ),
     }
 
+    reconciliation_status = "skipped" if skip_ccusage else ("failed" if ccusage_error else "matched")
+    reconciliation = {
+        "status": reconciliation_status,
+        "note": "ccusage is an external baseline only, not required for local analysis",
+    }
+
     return {
         "summary": {
             "window_days": days,
@@ -75,6 +84,7 @@ def run_audit(days: int = 7) -> dict:
         },
         "ccusage": ccusage_data,
         "ccusage_error": ccusage_error,
+        "reconciliation": reconciliation,
         "accounting_basis": accounting_basis,
         "parser_errors": parser_errors,
         "detector_errors": detector_errors,
@@ -88,8 +98,15 @@ def run_audit(days: int = 7) -> dict:
 def main():
     ap = argparse.ArgumentParser(description="Audit Claude Code token usage (read-only).")
     ap.add_argument("--days", type=int, default=7)
+    ap.add_argument("--skip-ccusage", action="store_true",
+                    help="Skip the ccusage baseline entirely (faster, offline-safe).")
+    ap.add_argument("--ccusage-timeout", type=int, default=25,
+                    help="Seconds to wait for ccusage before giving up (default: 25).")
     args = ap.parse_args()
-    print(json.dumps(run_audit(days=args.days), indent=2, default=str))
+    print(json.dumps(
+        run_audit(days=args.days, skip_ccusage=args.skip_ccusage, ccusage_timeout=args.ccusage_timeout),
+        indent=2, default=str,
+    ))
 
 
 if __name__ == "__main__":

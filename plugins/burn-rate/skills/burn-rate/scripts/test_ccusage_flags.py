@@ -33,7 +33,7 @@ def _mock_config():
 
 class TestCcusageBinaryDetection(unittest.TestCase):
     def test_run_daily_uses_installed_binary_when_available(self):
-        """When ccusage is on PATH, _run should call it directly, not via npx."""
+        """When ccusage is on PATH, _run should call it directly (full path), not via npx."""
         fake_json = json.dumps({"daily": [{"date": "2026-06-10", "totalCost": 0.5}]})
         fake_result = mock.Mock(returncode=0, stdout=fake_json, stderr="")
         with mock.patch("ccusage.shutil.which", return_value="/usr/local/bin/ccusage"), \
@@ -42,7 +42,9 @@ class TestCcusageBinaryDetection(unittest.TestCase):
         self.assertIsNone(err)
         self.assertIsNotNone(data)
         cmd = mock_run.call_args[0][0]
-        self.assertEqual(cmd[0], "ccusage", f"Expected 'ccusage' binary, got: {cmd[0]}")
+        # The full binary path is used — must not fall back to npx
+        self.assertNotEqual(cmd[0], "npx", "Should not use npx when binary is on PATH")
+        self.assertIn("ccusage", cmd[0], f"Expected ccusage in command, got: {cmd[0]}")
 
     def test_run_daily_falls_back_to_npx_when_not_installed(self):
         """When ccusage is not on PATH, _run should fall back to npx."""
