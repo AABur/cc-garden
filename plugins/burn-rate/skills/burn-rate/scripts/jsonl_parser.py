@@ -259,8 +259,12 @@ def build_session_from_records(session_id: str, records: list) -> tuple:
             # Measure size only — never persist the injected content/stdout
             # (privacy parity with the 80-char command_head cap above).
             content = att.get("content") or att.get("stdout") or ""
-            exit_code = att.get("exitCode", 0) or 0
-            is_error = att_type == "hook_error" or int(exit_code) != 0
+            raw_exit = att.get("exitCode", 0)
+            try:
+                exit_code = int(raw_exit)
+            except (TypeError, ValueError):
+                exit_code = 0
+            is_error = att_type == "hook_error" or exit_code != 0
             causal_events.append(CausalEvent(
                 tool_use_id=att.get("toolUseID", "") or "",
                 session_id=session_id,

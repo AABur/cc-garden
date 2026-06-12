@@ -146,6 +146,18 @@ class TestHookAttachmentExtraction(unittest.TestCase):
         self.assertTrue(ev_err_exit[0].is_error)
         self.assertFalse(ev_clean[0].is_error)
 
+    def test_exit_code_string_falls_back_to_zero(self):
+        """exitCode='error' (non-numeric string) must not raise; is_error stays False."""
+        rec = _make_hook_attachment(
+            "A:b", "A", "output", attachment_type="hook_success", exit_code="error"
+        )
+        # Must not raise
+        _sess, causal_events, _stats = jp.build_session_from_records("s1", [rec])
+        # Event is still emitted (session not dropped)
+        self.assertEqual(len(causal_events), 1)
+        # exitCode fell back to 0, type is hook_success -> is_error is False
+        self.assertFalse(causal_events[0].is_error)
+
     def test_non_hook_attachment_ignored(self):
         """An attachment whose type is not hook_* is ignored entirely."""
         rec = _make_hook_attachment(

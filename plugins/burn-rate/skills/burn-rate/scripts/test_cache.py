@@ -95,6 +95,29 @@ class TestCache(unittest.TestCase):
         leaks = cache.detect(sessions, [], None, pricing)
         self.assertEqual([l for l in leaks if l.id == "cache:prefix_rewrite_after_pause"], [])
 
+    def test_prefix_rewrite_exactly_300s_does_not_fire(self):
+        # Strict > 300: a gap of exactly 300s must NOT trigger the leak.
+        base = datetime(2026, 6, 10, 12, 0, 0, tzinfo=timezone.utc)
+        sessions = []
+        for i in range(3):
+            t1 = _ts_turn(base, cw=1000, inp=1000)
+            t2 = _ts_turn(base + timedelta(seconds=300), cw=60_000, inp=1000)
+            sessions.append(self._sess([t1, t2], sid=f"sess{i}"))
+        leaks = cache.detect(sessions, [], None, pricing)
+        self.assertEqual([l for l in leaks if l.id == "cache:prefix_rewrite_after_pause"], [])
+
+    def test_prefix_rewrite_301s_does_fire(self):
+        # 301s > 300: should trigger once MIN_REWRITES is met.
+        base = datetime(2026, 6, 10, 12, 0, 0, tzinfo=timezone.utc)
+        sessions = []
+        for i in range(3):
+            t1 = _ts_turn(base, cw=1000, inp=1000)
+            t2 = _ts_turn(base + timedelta(seconds=301), cw=60_000, inp=1000)
+            sessions.append(self._sess([t1, t2], sid=f"sess{i}"))
+        leaks = cache.detect(sessions, [], None, pricing)
+        rw = [l for l in leaks if l.id == "cache:prefix_rewrite_after_pause"]
+        self.assertEqual(len(rw), 1)
+
     def test_low_hit_ratio_does_not_spawn_prefix_rewrite(self):
         # Existing-style low-ratio fixture yields exactly low_hit_ratio, no rewrite leak.
         turns = [_turn(600_000, 100_000)]

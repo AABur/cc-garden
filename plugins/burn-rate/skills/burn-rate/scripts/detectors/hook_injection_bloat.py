@@ -3,12 +3,13 @@
 
 Unlike tool_output_bloat (which measures tool_result output), this detector
 measures the TRUE cost of hook-injected content. The observed events already
-include every fire in the window, so the summed total IS the real per-week
-injected cost -- no synthetic multiplier is applied (burn-rate's core
-principle is a deduplicated, non-inflated basis)."""
+include every fire in the window, so the summed total IS the real injected cost
+for the observation window -- no synthetic multiplier is applied (burn-rate's
+core principle is a deduplicated, non-inflated basis). Note: est_weekly_tokens
+is used as-is without normalization to a week."""
 from . import Leak
 
-MIN_EST_TOKENS = 2_000   # ~8k chars/week of injection; below this is noise
+MIN_EST_TOKENS = 2_000   # ~8k chars across the observation window; below this is noise
 PER_TURN_EVENTS = {"SessionStart", "UserPromptSubmit"}
 
 

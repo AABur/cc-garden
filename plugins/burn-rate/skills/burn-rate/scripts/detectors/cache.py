@@ -42,7 +42,7 @@ def _detect_prefix_rewrites(sessions):
     cache-write (prefix rewrite). Returns (events, peak_days).
 
     events: list of (session, gap_seconds, rewrite_tokens) — one per detected pause.
-    peak_days: dict of UTC date -> total tokens, aggregated across all turns.
+    peak_days: dict of UTC date -> sum of (context_size + output_tokens) per turn, aggregated across all turns.
     """
     events = []
     peak_days = {}

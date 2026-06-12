@@ -72,6 +72,10 @@ class TestHookInjectionBloat(unittest.TestCase):
         evidence_text = "\n".join(leak.evidence)
         self.assertIn("UserPromptSubmit:inject", evidence_text)
         self.assertIn("SessionStart:clear", evidence_text)
+        # est_weekly_tokens reports only the worst hook's cost (100_000 // 4 = 25_000),
+        # not the aggregate of both hooks (125_000 // 4 = 31_250).
+        worst_hook_tokens = 100_000 // 4  # UserPromptSubmit: 10 fires x 10_000 chars
+        self.assertEqual(leak.est_weekly_tokens, worst_hook_tokens)
 
     def test_per_turn_note_present_for_sessionstart(self):
         events = [_hook("SessionStart:clear", "SessionStart", 12_000) for _ in range(20)]
