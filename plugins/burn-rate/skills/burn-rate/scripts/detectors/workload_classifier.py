@@ -241,7 +241,7 @@ def cadence_evidence(proj_sessions):
 
     Surfaces the underlying cadence data (modal interval, CV, off-hours, interactive
     and sidechain shares, top token sessions) so the user judges legitimate batch
-    vs runaway — the classifier never asserts that on volume alone.
+    vs scheduled automation — the classifier never asserts that on volume alone.
     """
     bullets = []
 
