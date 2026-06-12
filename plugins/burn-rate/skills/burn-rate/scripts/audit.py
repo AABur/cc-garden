@@ -27,13 +27,13 @@ def run_audit(days: int = 7, skip_ccusage: bool = False, ccusage_timeout: int = 
         ccusage_data, ccusage_error = None, "skipped"
     else:
         ccusage_data, ccusage_error = ccusage.run_daily(days=days, timeout=ccusage_timeout)
-    sessions, _causal_events, parse_stats, parser_errors = jsonl_parser.parse_all(since_days=days)
+    sessions, causal_events, parse_stats, parser_errors = jsonl_parser.parse_all(since_days=days)
     config = config_inspector.build_snapshot()
 
     leaks, detector_errors = [], []
     for mod in _DETECTOR_MODULES:
         try:
-            leaks.extend(mod.detect(sessions, _causal_events, config, pricing))
+            leaks.extend(mod.detect(sessions, causal_events, config, pricing))
         except Exception as e:
             detector_errors.append(f"{mod.__name__}: {type(e).__name__}: {e}")
     leaks.sort(key=lambda leak: leak.est_weekly_savings_usd, reverse=True)

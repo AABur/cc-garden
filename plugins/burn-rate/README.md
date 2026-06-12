@@ -38,7 +38,7 @@ audit still runs without it using token counts only.
 |---|---|---|
 | `--days N` | 7 | Look-back window in days |
 | `--skip-ccusage` | off | Skip the `ccusage` baseline entirely |
-| `--ccusage-timeout N` | 15 | Seconds to wait for `npx ccusage` before aborting |
+| `--ccusage-timeout N` | 25 | Seconds to wait for `npx ccusage` before aborting |
 
 ## What it checks (Phase 1 + Phase 2)
 
@@ -64,7 +64,7 @@ audit still runs without it using token counts only.
 
 | id | what it catches |
 |---|---|
-| `workload:high_volume_parallel_workload` | Projects with high parallel session volume (≥10 sessions/week) |
+| `workload:high_volume_parallel_workload` | Projects with high parallel session volume (>10 sessions/day) |
 | `workload:possible_recurring_automation` | Multi-signal: high volume + short sessions + no tool-search + many hooks |
 
 ## Output schema
@@ -74,9 +74,9 @@ Key top-level fields:
 | Field | Description |
 |---|---|
 | `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals |
-| `opportunity_ranking` | Ranked list of findings by `rank_signal_tokens`. **Not additive** — entries may overlap. |
+| `opportunity_ranking` | Ranked list of findings by `rank_signal_cost_usd` (descending). **Not additive** — entries may overlap. |
 | `total_savings` | Always `status: "not_reported"` because ranking scopes overlap |
-| `reconciliation` | `ccusage` comparison status (`ok`, `skipped`, `unavailable`, or `drift_detected`) |
+| `reconciliation` | `ccusage` comparison status: `matched`, `skipped`, or `failed` |
 | `leaks` | Individual findings, each with a `basis` field (`spend`, `causal`, `workload`, or `mixed`) |
 | `bottlenecks` | Top consumers by skill / plugin / agent / session-kind |
 

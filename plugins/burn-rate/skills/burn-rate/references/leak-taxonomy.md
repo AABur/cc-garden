@@ -17,7 +17,7 @@
 | `causal:hook_output_bloat` | causal | Hook stdout feeding oversized text into context |
 | `causal:bash_antipatterns` | causal | Shell commands known to inflate output |
 | `causal:repeated_reads` | causal | Same file read 4+ times in a session with large content |
-| `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (≥10/week) |
+| `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (>10 sessions/day) |
 | `workload:possible_recurring_automation` | workload | Multi-signal: high volume + short sessions + no tool-search + many hooks |
 
 ## Phase 3 (planned)

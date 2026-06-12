@@ -7,7 +7,7 @@ Because subagent work is inherently active parallel workload, findings are alway
 'suggestion' severity rather than critical/warning.
 """
 from __future__ import annotations
-from detectors import Leak
+from . import Leak
 
 OUTPUT_THRESHOLD = 1000
 # Lower threshold than interactive (fan-out work has more variance per-session)

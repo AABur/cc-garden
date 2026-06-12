@@ -1,8 +1,6 @@
 # detectors/workload_classifier.py
 """Classifies high-volume project activity; warns about automation only on multi-signal evidence."""
 from __future__ import annotations
-from datetime import datetime, timezone
-from statistics import median
 from collections import Counter
 from . import Leak
 

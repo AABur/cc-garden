@@ -52,16 +52,16 @@ The audit builds three accounting ledgers from the local transcript store:
 |---|---|---|
 | `--days N` | 7 | Look-back window in days |
 | `--skip-ccusage` | off | Skip the `ccusage` baseline entirely |
-| `--ccusage-timeout N` | 15 | Seconds to wait for `npx ccusage` before aborting |
+| `--ccusage-timeout N` | 25 | Seconds to wait for `npx ccusage` before aborting |
 
 ## Key output fields
 
 | Field | Description |
 |---|---|
 | `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals |
-| `opportunity_ranking` | Ranked list of findings by `rank_signal_tokens`. Not additive — entries may overlap. |
+| `opportunity_ranking` | Ranked list of findings by `rank_signal_cost_usd` (descending). Not additive — entries may overlap. |
 | `total_savings.status` | Always `"not_reported"` because ranking scopes overlap; no single total is meaningful |
-| `reconciliation` | `ccusage` comparison status (`ok`, `skipped`, `unavailable`, or `drift_detected`) |
+| `reconciliation` | `ccusage` comparison status: `matched`, `skipped`, or `failed` |
 | `leaks` | Individual findings, each with a `basis` field (`spend`, `causal`, `workload`, or `mixed`) |
 | `bottlenecks` | Top consumers by skill / plugin / agent / session-kind (Pareto attribution) |
 
@@ -77,7 +77,7 @@ The audit builds three accounting ledgers from the local transcript store:
 | `causal:hook_output_bloat` | causal | Hook stdout feeding oversized text into context |
 | `causal:bash_antipatterns` | causal | Shell commands known to inflate output (cat large files, find /, etc.) |
 | `causal:repeated_reads` | causal | Same file read 4+ times in a session with large content |
-| `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (≥10 sessions/week) |
+| `workload:high_volume_parallel_workload` | workload | Projects with high parallel session volume (>10 sessions/day) |
 | `workload:possible_recurring_automation` | workload | Multi-signal: high volume + short sessions + no tool-search + many hooks |
 
 ## Workflow

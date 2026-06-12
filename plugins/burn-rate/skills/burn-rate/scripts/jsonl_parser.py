@@ -167,6 +167,7 @@ def build_session_from_records(session_id: str, records: list) -> tuple:
     # Partial CausalEvents keyed by tool_use_id, populated from assistant records.
     pending: dict[str, CausalEvent] = {}
     causal_events: list[CausalEvent] = []
+    parseable_assistant = 0
 
     for raw in records:
         rec_type = raw.get("type")
@@ -178,6 +179,7 @@ def build_session_from_records(session_id: str, records: list) -> tuple:
             turn = parse_turn(raw)
             if turn is None:
                 continue
+            parseable_assistant += 1
             if turn.dedup_key in seen:
                 continue
             seen.add(turn.dedup_key)
@@ -246,7 +248,7 @@ def build_session_from_records(session_id: str, records: list) -> tuple:
                 evt.content_size = len(str(item.get("content", "")))
                 causal_events.append(evt)
 
-    stats.duplicates_removed = stats.raw_assistant_records - stats.deduped_assistant_requests
+    stats.duplicates_removed = parseable_assistant - stats.deduped_assistant_requests
     stats.total_parsed_events = stats.raw_assistant_records + stats.user_tool_events + stats.hook_events
     return sess, causal_events, stats
 
