@@ -32,13 +32,62 @@ language.
 Requirements: Python 3.11+. `ccusage` is optional (auto-fetched via `npx`); the
 audit still runs without it using token counts only.
 
-## What it checks (Phase 1)
+### CLI flags
 
-- Opus on interactive simple turns (excludes workflow/subagent fan-out)
-- Context-rot zone (>400k-token turns)
-- Low cache-hit ratio (cacheable-minimum aware)
-- Oversized CLAUDE.md
-- Attribution Pareto: tokens by skill / plugin / agent / session-kind
+| Flag | Default | Description |
+|---|---|---|
+| `--days N` | 7 | Look-back window in days |
+| `--skip-ccusage` | off | Skip the `ccusage` baseline entirely |
+| `--ccusage-timeout N` | 15 | Seconds to wait for `npx ccusage` before aborting |
+
+## What it checks (Phase 1 + Phase 2)
+
+### Spend detectors
+
+| id | what it catches |
+|---|---|
+| `model_routing:interactive_opus_simple` | Opus on short interactive turns (excludes workflow/subagent fan-out) |
+| `model_routing:subagent_opus_simple` | Opus on short background/subagent turns |
+| `context:rot_zone` | Turns past ~400k context |
+| `cache:low_hit_ratio` | Cache churn, cacheable-minimum aware |
+| `claude_md:bloat` | CLAUDE.md over ~2k tokens |
+
+### Causal detectors (Phase 2)
+
+| id | what it catches |
+|---|---|
+| `causal:hook_output_bloat` | Hook stdout feeding oversized text into context |
+| `causal:bash_antipatterns` | Shell commands known to inflate output (cat large files, find /, etc.) |
+| `causal:repeated_reads` | Same file read 4+ times in a session with large content |
+
+### Workload detectors (Phase 2)
+
+| id | what it catches |
+|---|---|
+| `workload:high_volume_parallel_workload` | Projects with high parallel session volume (≥10 sessions/week) |
+| `workload:possible_recurring_automation` | Multi-signal: high volume + short sessions + no tool-search + many hooks |
+
+## Output schema
+
+Key top-level fields:
+
+| Field | Description |
+|---|---|
+| `accounting_basis` | Local deduplication stats: raw vs deduped records, sidechain count, event totals |
+| `opportunity_ranking` | Ranked list of findings by `rank_signal_tokens`. **Not additive** — entries may overlap. |
+| `total_savings` | Always `status: "not_reported"` because ranking scopes overlap |
+| `reconciliation` | `ccusage` comparison status (`ok`, `skipped`, `unavailable`, or `drift_detected`) |
+| `leaks` | Individual findings, each with a `basis` field (`spend`, `causal`, `workload`, or `mixed`) |
+| `bottlenecks` | Top consumers by skill / plugin / agent / session-kind |
+
+> Primary cost basis is local deduplicated assistant usage. Causal and workload
+> events are parsed for attribution and workflow diagnosis only; their estimates
+> are not additive spend.
+
+## Attribution Pareto
+
+`bottlenecks` ranks token consumers by skill, plugin, agent, and session-kind.
+This is the attribution view the original token-audit concept does not provide.
 
 ## Privacy
 
