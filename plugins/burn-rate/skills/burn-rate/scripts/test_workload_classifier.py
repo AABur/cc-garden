@@ -144,7 +144,8 @@ class TestWorkloadClassifier(unittest.TestCase):
         # 3. Single cwd: all same
         # 4. Off-hours: start at 23:00 UTC (off-hours)
         # 5. Little interactive: all session_kind="bg"
-        n = 10
+        # Use 11 sessions spaced 1 hour apart → 11/((11-1)/24) ≈ 26.4 sessions/day > 10
+        n = 11
         sessions = []
         for i in range(n):
             ts = datetime(2026, 6, 1, 23, 0, tzinfo=timezone.utc) + timedelta(hours=i)

@@ -12,6 +12,7 @@ DETECTOR_MODULES = [
     "detectors.hook_output_bloat",
     "detectors.bash_antipatterns",
     "detectors.repeated_reads",
+    "detectors.workload_classifier",
 ]
 
 SEVERITIES = ("critical", "warning", "suggestion")
