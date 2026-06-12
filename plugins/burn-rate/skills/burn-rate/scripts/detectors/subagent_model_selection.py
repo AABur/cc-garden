@@ -30,6 +30,7 @@ def detect(sessions, causal_events, config, pricing) -> list:
         return []
 
     opus_cost = sonnet_cost = 0.0
+    tokens = 0
     for t in simple:
         b = pricing.TokenBreakdown(
             input_tokens=t.usage.input_tokens,
@@ -40,9 +41,9 @@ def detect(sessions, causal_events, config, pricing) -> list:
         )
         opus_cost += pricing.estimate_cost(b, t.model)
         sonnet_cost += pricing.estimate_cost(b, "claude-sonnet-4-6")
+        tokens += b.total
 
     savings = opus_cost - sonnet_cost
-    # Subagent model routing is always "suggestion" — it's active work, not waste
     severity = "suggestion"
 
     return [Leak(
@@ -57,9 +58,9 @@ def detect(sessions, causal_events, config, pricing) -> list:
             f"{len(simple)} short Opus turns in sidechain/background sessions",
             f"Opus cost: ${opus_cost:.2f}/week, Sonnet cost: ${sonnet_cost:.2f}/week",
             "This appears to be active parallel workload, not automatically a leak",
-            f"Estimated model-routing opportunity: {sum(t.usage.output_tokens + t.usage.input_tokens for t in simple):,} tokens/week",
+            f"Estimated model-routing opportunity: {tokens:,} tokens/week",
         ],
-        est_weekly_tokens=sum(t.usage.output_tokens + t.usage.input_tokens for t in simple),
+        est_weekly_tokens=tokens,
         est_weekly_cost_usd=round(opus_cost, 4),
         est_weekly_savings_usd=round(savings, 4),
         fix_action="Consider routing short worker turns to Sonnet; verify outputs are correct before switching",
