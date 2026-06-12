@@ -1,7 +1,7 @@
 {
   "name": "burn-rate",
-  "version": "0.2.0",
-  "description": "Audit Claude Code token spend, read-only, and rank where tokens are leaking. Deduplicated transcript analysis with skill/plugin/MCP/agent attribution, current 2026 pricing, and concrete fixes — no config is ever modified.",
+  "version": "0.3.0",
+  "description": "Audit Claude Code token spend, read-only, and rank where tokens are leaking. Deduplicated transcript analysis with skill/plugin/MCP/agent attribution, current 2026 pricing, and concrete fixes — no config is ever modified. Phase 3: hook injection tax, workload cadence evidence, config description tax, enriched bash/cache diagnostics.",
   "author": {
     "name": "Alexander Burchenko",
     "email": "aabur@mail.ru"
