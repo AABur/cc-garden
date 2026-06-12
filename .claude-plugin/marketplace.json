@@ -1,7 +1,7 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "cc-garden",
-  "description": "Personal collection of Claude Code plugins — utilities for Python project bootstrap, classified-ad posting, and project retrospective analysis.",
+  "description": "Personal collection of Claude Code plugins — Python project bootstrap and design patterns, classified-ad posting, project retrospectives, weekly luck-break reflection, and token-spend auditing.",
   "owner": {
     "name": "Alexander Burchenko",
     "email": "aabur@mail.ru"
