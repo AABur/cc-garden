@@ -6,6 +6,7 @@ from dataclasses import dataclass, field
 
 DETECTOR_MODULES = [
     "detectors.model_selection",
+    "detectors.subagent_model_selection",
     "detectors.context_rot",
     "detectors.cache",
     "detectors.claude_md_bloat",

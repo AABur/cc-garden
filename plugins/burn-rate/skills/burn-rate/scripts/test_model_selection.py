@@ -29,6 +29,7 @@ class TestModelSelection(unittest.TestCase):
         leaks = model_selection.detect([self._sess(turns)], [], None, pricing)
         self.assertEqual(len(leaks), 1)
         self.assertIn("40", leaks[0].title)
+        self.assertEqual(leaks[0].id, "model_routing:interactive_opus_simple")
 
     def test_excludes_sidechain_and_bg(self):
         turns = [_opus(50, sidechain=True) for _ in range(40)] + [_opus(50, kind="bg") for _ in range(40)]

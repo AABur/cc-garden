@@ -37,9 +37,12 @@ def detect(sessions, causal_events, config, pricing) -> list:
     savings = round(opus_cost - sonnet_cost, 2)
     severity = "critical" if savings >= 5 else "warning" if savings >= 1 else "suggestion"
     return [Leak(
-        id="model_selection:opus_on_interactive_simple",
+        id="model_routing:interactive_opus_simple",
         title=f"Opus on {len(simple)} interactive simple turns",
         severity=severity, category="model",
+        basis="spend",
+        overlap_group="model_routing",
+        additive=False,
         evidence=[f"{len(simple)} interactive Opus turns with <{OUTPUT_THRESHOLD} output tokens",
                   "Excludes workflow/subagent turns (separate concern)",
                   f"Opus est ${opus_cost:.2f} vs Sonnet est ${sonnet_cost:.2f} (weekly, list)"],
